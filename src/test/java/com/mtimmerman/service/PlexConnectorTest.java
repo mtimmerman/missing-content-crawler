@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -26,6 +27,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class PlexConnectorTest {
     @Autowired
     private PlexConnector plexConnector;
+    @Autowired
+    private ConfigurableEnvironment env;
 
     @Test
     public void testLogin() throws Exception {
@@ -40,6 +43,18 @@ public class PlexConnectorTest {
         Assert.assertTrue(serverList.getServers().length == serverList.getSize());
 
         return serverList;
+    }
+
+    @Test
+    public void testGetServer() throws Exception {
+        String serverName = env.getRequiredProperty("plex.server");
+
+        Server server = plexConnector.getServer(serverName);
+
+        Assert.assertEquals(
+                serverName,
+                server.getName()
+        );
     }
 
     @Test

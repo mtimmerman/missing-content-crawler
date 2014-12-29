@@ -7,6 +7,7 @@ import com.mtimmerman.rest.resources.plex.PlayList;
 import com.mtimmerman.rest.resources.plex.Server;
 import com.mtimmerman.rest.resources.plex.ServerList;
 import com.mtimmerman.rest.resources.plex.User;
+import com.mtimmerman.service.exceptions.PlexServerNotFoundException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
@@ -90,6 +91,23 @@ public class PlexConnector extends AbstractConnector {
         return serverList;
     }
 
+    public Server getServer(String name) throws IOException, PlexServerNotFoundException {
+        ServerList serverList = getServers();
+
+        for (Server server: serverList.getServers()) {
+            if (server.getName().equals(name)) {
+                return server;
+            }
+        }
+
+        throw new PlexServerNotFoundException(
+                String.format(
+                        "Server \"%s\" was not found.",
+                        name
+                )
+        );
+    }
+
     public DeviceList getDevices() throws IOException {
         HttpGet httpGet = new HttpGet("https://plex.tv/devices.xml");
         addPlexToken(httpGet);
@@ -118,6 +136,25 @@ public class PlexConnector extends AbstractConnector {
         return user;
     }
 
+    public DirectoryList getMetaData(Server server, String key) throws IOException{
+        String uri = String.format(
+                "%s%s",
+                server.getServerEndpoint(),
+                key
+        );
+
+        HttpGet httpGet = createGET(uri);
+        addPlexToken(httpGet);
+
+        HttpResponse httpResponse = handleResponse(httpGet);
+
+        String result = EntityUtils.toString(httpResponse.getEntity());
+
+        DirectoryList directoryList = xmlMapper.readValue(result, DirectoryList.class);
+        directoryList.setUriUsed(httpGet.getURI());
+        return directoryList;
+    }
+
     public DirectoryList getSections(Server server, DirectoryList parentDirectoryList, String key) throws IOException {
         String uri =String.format(
                 "%s/library/sections",
@@ -126,11 +163,7 @@ public class PlexConnector extends AbstractConnector {
 
         if (parentDirectoryList != null) {
             if (key.startsWith("/")) {
-                uri = String.format(
-                        "%s%s",
-                        server.getServerEndpoint(),
-                        key
-                );
+                return getMetaData(server, key);
             } else {
                 uri = String.format(
                         "%s/%s",
@@ -147,16 +180,9 @@ public class PlexConnector extends AbstractConnector {
 
         String result = EntityUtils.toString(httpResponse.getEntity());
 
-        try {
-            DirectoryList directoryList = xmlMapper.readValue(result, DirectoryList.class);
-            directoryList.setUriUsed(httpGet.getURI());
-
-            return directoryList;
-        } catch (Exception e){
-
-            throw e;
-
-        }
+        DirectoryList directoryList = xmlMapper.readValue(result, DirectoryList.class);
+        directoryList.setUriUsed(httpGet.getURI());
+        return directoryList;
     }
 
     public PlayList getPlayLists(PlayList parentPlayList, String key) throws IOException {
