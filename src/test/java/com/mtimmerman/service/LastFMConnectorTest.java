@@ -29,7 +29,7 @@ public class LastFMConnectorTest {
                 50
         );
 
-        Assert.assertEquals(50, albumList.getAlbums().length);
+        Assert.assertEquals(50, albumList.getLastFMAlbums().length);
         Assert.assertTrue(albumList.getTotalPages() > 1);
     }
 }

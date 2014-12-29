@@ -22,8 +22,6 @@ public class LastFMAlbum {
     @JacksonXmlProperty(localName = "image")
     private Image[] images;
 
-    private Boolean foundInPlex = Boolean.FALSE;
-
     public String getRank() {
         return rank;
     }
@@ -50,13 +48,5 @@ public class LastFMAlbum {
 
     public Image[] getImages() {
         return images;
-    }
-
-    public Boolean getFoundInPlex() {
-        return foundInPlex;
-    }
-
-    public void setFoundInPlex(Boolean foundInPlex) {
-        this.foundInPlex = foundInPlex;
     }
 }

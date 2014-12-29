@@ -21,7 +21,7 @@ public class AlbumList {
     private String value;
 
     @JacksonXmlProperty(localName = "album")
-    private Album[] albums;
+    private LastFMAlbum[] lastFMAlbums;
 
     public String getArtist() {
         return artist;
@@ -43,7 +43,7 @@ public class AlbumList {
         return total;
     }
 
-    public Album[] getAlbums() {
-        return albums;
+    public LastFMAlbum[] getLastFMAlbums() {
+        return lastFMAlbums;
     }
 }
