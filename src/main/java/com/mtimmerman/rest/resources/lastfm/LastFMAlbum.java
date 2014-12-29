@@ -5,7 +5,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 /**
  * Created by maarten on 29.12.14.
  */
-public class Album {
+public class LastFMAlbum {
     @JacksonXmlProperty(isAttribute = true)
     private String rank;
 
