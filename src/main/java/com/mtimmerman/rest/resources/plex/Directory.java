@@ -85,6 +85,22 @@ public class Directory {
     private String librarySectionTitle;
     @JacksonXmlProperty(isAttribute = true)
     private String librarySectionUUID;
+    @JacksonXmlProperty(isAttribute = true)
+    private String studio;
+    @JacksonXmlProperty(isAttribute = true)
+    private String contentRating;
+    @JacksonXmlProperty(isAttribute = true)
+    private String rating;
+    @JacksonXmlProperty(isAttribute = true)
+    private String banner;
+    @JacksonXmlProperty(isAttribute = true)
+    private Long duration;
+    @JacksonXmlProperty(isAttribute = true)
+    private Integer childCount;
+    @JacksonXmlProperty(isAttribute = true)
+    private String theme;
+    @JacksonXmlProperty(isAttribute = true)
+    private String userRating;
 
     @JacksonXmlText
     private String value;
@@ -96,6 +112,8 @@ public class Directory {
     private Tag[] genres;
     @JacksonXmlProperty(localName = "Collection")
     private Tag[] collections;
+    @JacksonXmlProperty(localName = "Role")
+    private Tag[] role;
 
     public Integer getAllowSync() {
         return allowSync;
