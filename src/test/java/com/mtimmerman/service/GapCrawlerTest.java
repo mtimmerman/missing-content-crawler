@@ -21,4 +21,9 @@ public class GapCrawlerTest {
     public void testFindGapsInMusic() throws Exception {
         gapCrawler.findGapsInMusic();
     }
+
+    @Test
+    public void testFindGapsInTvEpisodes() throws Exception {
+        gapCrawler.findGapsInTvEpisodes();
+    }
 }

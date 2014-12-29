@@ -51,6 +51,7 @@ public class GapCrawler {
 
     public void findGapsInMusic()
             throws IOException, PlexServerNotFoundException, LastFMException {
+
         Server server = plexConnector.getServer(
                 env.getRequiredProperty("plex.server")
         );
@@ -190,6 +191,49 @@ public class GapCrawler {
                                         )
                                 );
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void findGapsInTvEpisodes()
+            throws IOException, PlexServerNotFoundException {
+
+        Server server = plexConnector.getServer(
+                env.getRequiredProperty("plex.server")
+        );
+
+        DirectoryList root = plexConnector.getSections(
+                server,
+                null,
+                null
+        );
+
+        for (Directory rootDirectory: root.getDirectories()) {
+            if (rootDirectory.getType() == DirectoryType.show) {
+                DirectoryList showDirectoryList = plexConnector.getSections(
+                        server,
+                        root,
+                        rootDirectory.getKey()
+                );
+
+                for (Directory showDirectory: showDirectoryList.getDirectories()) {
+                    if (showDirectory.getKey().equals("all")) {
+                        DirectoryList allTVShowsDirectoryList = plexConnector.getSections(
+                                server,
+                                showDirectoryList,
+                                showDirectory.getKey()
+                        );
+
+                        for (Directory tvShowDirectory: allTVShowsDirectoryList.getDirectories()) {
+                            log.info(
+                                    String.format(
+                                            "TV SHOW: %s",
+                                            tvShowDirectory.getTitle()
+                                    )
+                            );
                         }
                     }
                 }
