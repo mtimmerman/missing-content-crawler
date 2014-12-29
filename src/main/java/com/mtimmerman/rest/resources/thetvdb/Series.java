@@ -26,4 +26,10 @@ public class Series {
     private String zap2itId;
     @JacksonXmlProperty(localName = "id")
     private String id;
+    @JacksonXmlProperty(localName = "AliasNames")
+    private String aliasNames;
+
+    public String getSeriesName() {
+        return seriesName;
+    }
 }
