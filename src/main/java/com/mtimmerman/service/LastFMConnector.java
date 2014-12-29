@@ -8,32 +8,20 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * Created by maarten on 29.12.14.
  */
 public class LastFMConnector extends AbstractConnector {
     private String apiKey;
-    private String apiSecret;
     private HttpClient httpClient;
     private String baseUrl;
 
-    public LastFMConnector() {
-        httpClient = HttpClientBuilder.create().build();
-    }
-
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
-    }
-
-    public void setApiSecret(String apiSecret) {
-        this.apiSecret = apiSecret;
     }
 
     public void setBaseUrl(String baseUrl) {
@@ -48,18 +36,6 @@ public class LastFMConnector extends AbstractConnector {
     @Override
     HttpPost createPOST(String uri) {
         return null;
-    }
-
-    private String urlEncodeUTF8(String s) {
-        if (s != null) {
-            try {
-                return URLEncoder.encode(s, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new UnsupportedOperationException(e);
-            }
-        }
-
-        return "";
     }
 
     public AlbumList getArtistGetTopAlbums(String artist, String mbid, Boolean autoCorrect, Integer page, Integer limit)

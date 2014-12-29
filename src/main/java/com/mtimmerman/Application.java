@@ -56,10 +56,6 @@ public class Application {
                 env.getRequiredProperty("lastFM.apiKey")
         );
 
-        lastFMConnector.setApiSecret(
-                env.getRequiredProperty("lastFM.apiSecret")
-        );
-
         lastFMConnector.setBaseUrl(
                 env.getRequiredProperty("lastFM.baseUrl")
         );

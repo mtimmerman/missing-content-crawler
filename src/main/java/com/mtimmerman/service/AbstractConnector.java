@@ -10,6 +10,8 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Created by maarten on 29.12.14.
@@ -51,5 +53,17 @@ public abstract class AbstractConnector {
         }
 
         throw new IOException(String.format("Code %s returned.", code));
+    }
+
+    protected String urlEncodeUTF8(String s) {
+        if (s != null) {
+            try {
+                return URLEncoder.encode(s, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new UnsupportedOperationException(e);
+            }
+        }
+
+        return "";
     }
 }
