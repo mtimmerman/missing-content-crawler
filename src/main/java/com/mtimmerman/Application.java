@@ -2,6 +2,7 @@ package com.mtimmerman;
 
 import com.mtimmerman.service.LastFMConnector;
 import com.mtimmerman.service.PlexConnector;
+import com.mtimmerman.service.TheTVDBConnector;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -62,4 +63,21 @@ public class Application {
 
         return lastFMConnector;
     }
+
+    @Bean
+    public TheTVDBConnector theTVDBConnector() {
+        TheTVDBConnector theTVDBConnector = new TheTVDBConnector();
+
+        theTVDBConnector.setApiKey(
+                env.getRequiredProperty("theTVDB.apiKey")
+        );
+
+        theTVDBConnector.setBaseUrl(
+                env.getRequiredProperty("theTVDB.baseUrl")
+        );
+
+        return theTVDBConnector;
+    }
+
+
 }
