@@ -8,8 +8,10 @@ import com.mtimmerman.rest.resources.plex.Directory;
 import com.mtimmerman.rest.resources.plex.DirectoryList;
 import com.mtimmerman.rest.resources.plex.Server;
 import com.mtimmerman.rest.resources.plex.enums.DirectoryType;
+import com.mtimmerman.rest.resources.thetvdb.SeriesList;
 import com.mtimmerman.service.exceptions.LastFMException;
 import com.mtimmerman.service.exceptions.PlexServerNotFoundException;
+import com.mtimmerman.service.exceptions.TheTVDBConnectorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class GapCrawler {
     PlexConnector plexConnector;
     @Autowired
     LastFMConnector lastFMConnector;
+    @Autowired
+    TheTVDBConnector theTVDBConnector;
     @Autowired
     private ConfigurableEnvironment env;
     @Autowired
@@ -199,7 +203,7 @@ public class GapCrawler {
     }
 
     public void findGapsInTvEpisodes()
-            throws IOException, PlexServerNotFoundException {
+            throws IOException, PlexServerNotFoundException, TheTVDBConnectorException {
 
         Server server = plexConnector.getServer(
                 env.getRequiredProperty("plex.server")
@@ -234,6 +238,12 @@ public class GapCrawler {
                                             tvShowDirectory.getTitle()
                                     )
                             );
+
+                            SeriesList seriesList = theTVDBConnector.getSeries(tvShowDirectory.getTitle());
+
+                            if (seriesList.getSeries()[0].getSeriesName().equals(tvShowDirectory.getTitle())) {
+                                log.info("FOUND");
+                            }
                         }
                     }
                 }

@@ -48,7 +48,13 @@ public class TheTVDBConnector extends AbstractConnector {
 
         String result = EntityUtils.toString(httpResponse.getEntity());
 
-        SeriesList seriesList = xmlMapper.readValue(result, SeriesList.class);
+        SeriesList seriesList = null;
+
+        try {
+            seriesList = xmlMapper.readValue(result, SeriesList.class);
+        } catch (Exception ex) {
+            throw ex;
+        }
 
         if (seriesList.getSeries() == null && seriesList.getValue() != null)
         {
