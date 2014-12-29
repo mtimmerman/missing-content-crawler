@@ -1,6 +1,7 @@
 package com.mtimmerman.rest.resources.lastfm;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 /**
  * Created by maarten on 29.12.14.
@@ -16,6 +17,8 @@ public class AlbumList {
     private Integer totalPages;
     @JacksonXmlProperty(isAttribute = true)
     private Integer total;
+    @JacksonXmlText
+    private String value;
 
     @JacksonXmlProperty(localName = "album")
     private Album[] albums;
