@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * Created by maarten on 24.12.14.
@@ -20,6 +21,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
+@EnableJpaRepositories
 public class Application {
     @Autowired
     private ConfigurableEnvironment env;
