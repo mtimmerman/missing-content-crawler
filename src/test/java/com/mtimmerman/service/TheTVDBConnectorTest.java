@@ -19,6 +19,8 @@ public class TheTVDBConnectorTest {
 
     @Test
     public void testGetSeries() throws Exception {
-        theTVDBConnector.getSeries("The Big Bang Theory");
+        theTVDBConnector.getSeries(
+                "The Big Bang Theory"
+        );
     }
 }
