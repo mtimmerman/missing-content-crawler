@@ -16,27 +16,11 @@ public class DeviceList {
     private Device[] devices;
     private URI uriUsed;
 
-    public String getPublicAddress() {
-        return publicAddress;
-    }
-
-    public void setPublicAddress(String publicAddress) {
-        this.publicAddress = publicAddress;
+    public void setUriUsed(URI uriUsed) {
+        this.uriUsed = uriUsed;
     }
 
     public Device[] getDevices() {
         return devices;
-    }
-
-    public void setDevices(Device[] devices) {
-        this.devices = devices;
-    }
-
-    public URI getUriUsed() {
-        return uriUsed;
-    }
-
-    public void setUriUsed(URI uriUsed) {
-        this.uriUsed = uriUsed;
     }
 }

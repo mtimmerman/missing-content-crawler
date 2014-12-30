@@ -54,6 +54,17 @@ public class DirectoryList extends MediaContainer {
     private String grandparentTitle;
     @JacksonXmlProperty(isAttribute = true)
     private String parentYear;
+    @JacksonXmlProperty(isAttribute = true)
+    private String banner;
+    @JacksonXmlProperty(isAttribute = true)
+    private String grandparentContentRating;
+    @JacksonXmlProperty(isAttribute = true)
+    private String grandparentStudio;
+    @JacksonXmlProperty(isAttribute = true)
+    private String theme;
+    @JacksonXmlProperty(isAttribute = true)
+    private String grandparentTheme;
+
 
     @JacksonXmlProperty(localName = "Directory")
     private Directory[] directories;
@@ -64,51 +75,11 @@ public class DirectoryList extends MediaContainer {
     @JacksonXmlProperty(localName = "Photo")
     private Photo[] photos;
 
-    public Integer getAllowSync() {
-        return allowSync;
-    }
-
-    public void setAllowSync(Integer allowSync) {
-        this.allowSync = allowSync;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public String getMediaTagPrefix() {
-        return mediaTagPrefix;
-    }
-
-    public void setMediaTagPrefix(String mediaTagPrefix) {
-        this.mediaTagPrefix = mediaTagPrefix;
-    }
-
-    public String getMediaTagVersion() {
-        return mediaTagVersion;
-    }
-
-    public void setMediaTagVersion(String mediaTagVersion) {
-        this.mediaTagVersion = mediaTagVersion;
-    }
-
-    public String getTitle1() {
-        return title1;
-    }
-
-    public void setTitle1(String title1) {
-        this.title1 = title1;
-    }
-
     public Directory[] getDirectories() {
         return directories;
     }
 
-    public void setDirectories(Directory[] directories) {
-        this.directories = directories;
+    public Video[] getVideos() {
+        return videos;
     }
 }

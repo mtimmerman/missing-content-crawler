@@ -115,131 +115,19 @@ public class Directory {
     @JacksonXmlProperty(localName = "Role")
     private Tag[] role;
 
-    public Integer getAllowSync() {
-        return allowSync;
-    }
-
-    public void setAllowSync(Integer allowSync) {
-        this.allowSync = allowSync;
-    }
-
-    public String getArt() {
-        return art;
-    }
-
-    public void setArt(String art) {
-        this.art = art;
-    }
-
-    public Integer getFilters() {
-        return filters;
-    }
-
-    public void setFilters(Integer filters) {
-        this.filters = filters;
-    }
-
-    public Integer getRefreshing() {
-        return refreshing;
-    }
-
-    public void setRefreshing(Integer refreshing) {
-        this.refreshing = refreshing;
-    }
-
-    public String getThumb() {
-        return thumb;
-    }
-
-    public void setThumb(String thumb) {
-        this.thumb = thumb;
-    }
-
     public String getKey() {
         return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     public DirectoryType getType() {
         return type;
     }
 
-    public void setType(DirectoryType type) {
-        this.type = type;
-    }
-
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getComposite() {
-        return composite;
-    }
-
-    public void setComposite(String composite) {
-        this.composite = composite;
-    }
-
-    public String getAgent() {
-        return agent;
-    }
-
-    public void setAgent(String agent) {
-        this.agent = agent;
-    }
-
-    public String getScanner() {
-        return scanner;
-    }
-
-    public void setScanner(String scanner) {
-        this.scanner = scanner;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Location[] getLocations() {
-        return locations;
-    }
-
-    public void setLocations(Location[] locations) {
-        this.locations = locations;
+    public Integer getIndex() {
+        return index;
     }
 }

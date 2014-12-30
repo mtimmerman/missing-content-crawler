@@ -12,20 +12,4 @@ public class Entitlements {
 
     @JacksonXmlText
     private String value;
-
-    public Integer getAll() {
-        return all;
-    }
-
-    public void setAll(Integer all) {
-        this.all = all;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 }

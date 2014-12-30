@@ -23,27 +23,15 @@ public class AlbumList {
     @JacksonXmlProperty(localName = "album")
     private LastFMAlbum[] lastFMAlbums;
 
+    public LastFMAlbum[] getLastFMAlbums() {
+        return lastFMAlbums;
+    }
+
     public String getArtist() {
         return artist;
     }
 
-    public Integer getPage() {
-        return page;
-    }
-
-    public Integer getPerPage() {
-        return perPage;
-    }
-
     public Integer getTotalPages() {
         return totalPages;
-    }
-
-    public Integer getTotal() {
-        return total;
-    }
-
-    public LastFMAlbum[] getLastFMAlbums() {
-        return lastFMAlbums;
     }
 }

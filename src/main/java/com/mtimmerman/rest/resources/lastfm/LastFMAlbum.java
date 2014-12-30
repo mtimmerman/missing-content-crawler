@@ -22,31 +22,11 @@ public class LastFMAlbum {
     @JacksonXmlProperty(localName = "image")
     private Image[] images;
 
-    public String getRank() {
-        return rank;
-    }
-
     public String getName() {
         return name;
     }
 
-    public String getPlayCount() {
-        return playCount;
-    }
-
     public String getMbid() {
         return mbid;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public AlbumArtist getArtist() {
-        return artist;
-    }
-
-    public Image[] getImages() {
-        return images;
     }
 }

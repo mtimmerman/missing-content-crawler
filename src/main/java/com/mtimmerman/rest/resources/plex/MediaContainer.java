@@ -22,23 +22,11 @@ public abstract class MediaContainer {
         return size;
     }
 
-    public void setSize(Integer size) {
-        this.size = size;
-    }
-
     public URI getUriUsed() {
         return uriUsed;
     }
 
     public void setUriUsed(URI uriUsed) {
         this.uriUsed = uriUsed;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 }

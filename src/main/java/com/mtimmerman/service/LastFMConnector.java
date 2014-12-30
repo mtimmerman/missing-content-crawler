@@ -9,6 +9,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -20,6 +22,10 @@ public class LastFMConnector extends AbstractConnector {
     private HttpClient httpClient;
     private String baseUrl;
 
+    private static final Logger log = LoggerFactory.getLogger(
+            LastFMConnector.class
+    );
+
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
@@ -30,6 +36,13 @@ public class LastFMConnector extends AbstractConnector {
 
     @Override
     protected HttpGet createGET(String uri) {
+        log.info(
+                String.format(
+                        "GET --> %s",
+                        uri
+                )
+        );
+
         return new HttpGet(uri);
     }
 

@@ -14,6 +14,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -22,6 +24,10 @@ import java.io.IOException;
  */
 public class PlexConnector extends AbstractConnector {
     private User loggedInUser;
+
+    private static final Logger log = LoggerFactory.getLogger(
+            PlexConnector.class
+    );
 
     public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
         httpClientContext = HttpClientContext.create();
@@ -32,6 +38,13 @@ public class PlexConnector extends AbstractConnector {
 
     @Override
     protected HttpGet createGET(String uri) {
+        log.info(
+                String.format(
+                        "GET --> %s",
+                        uri
+                )
+        );
+
         HttpGet httpGet = new HttpGet(
                 uri
         );
@@ -69,6 +82,13 @@ public class PlexConnector extends AbstractConnector {
 
     @Override
     protected HttpPost createPOST(String uri) {
+        log.info(
+                String.format(
+                        "POST --> %s",
+                        uri
+                )
+        );
+
         HttpPost httpPost = new HttpPost(
                 uri
         );

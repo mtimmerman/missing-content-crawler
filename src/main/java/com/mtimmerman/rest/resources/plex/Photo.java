@@ -52,8 +52,6 @@ public class Photo {
     @JacksonXmlProperty(isAttribute = true)
     private String grandparentKey;
 
-
-
     @JacksonXmlProperty(isAttribute = true, localName = "Media")
     private Media[] media;
 }
