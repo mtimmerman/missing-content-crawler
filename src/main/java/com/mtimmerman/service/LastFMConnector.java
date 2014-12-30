@@ -43,21 +43,36 @@ public class LastFMConnector extends AbstractConnector {
         String uri = String.format(
                 "%s/2.0/?method=artist.gettopalbums&artist=%s&mbid=%s&autocorrect=%s&page=%s&limit=%s&api_key=%s",
                 baseUrl,
-                urlEncodeUTF8(artist),
-                urlEncodeUTF8(mbid),
+                urlEncodeUTF8(
+                        artist
+                ),
+                urlEncodeUTF8(
+                        mbid
+                ),
                 autoCorrect ? "1" : "0",
                 page,
                 limit,
-                urlEncodeUTF8(apiKey)
+                urlEncodeUTF8(
+                        apiKey
+                )
         );
 
-        HttpGet httpGet = createGET(uri);
+        HttpGet httpGet = createGET(
+                uri
+        );
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        HttpResponse httpResponse = handleResponse(
+                httpGet
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        LastFMContainer lastFMContainer = xmlMapper.readValue(result, LastFMContainer.class);
+        LastFMContainer lastFMContainer = xmlMapper.readValue(
+                result,
+                LastFMContainer.class
+        );
 
         if (lastFMContainer.getLastFMStatus() == LastFMStatus.failed) {
             throw new LastFMException(

@@ -25,68 +25,142 @@ public class PlexConnector extends AbstractConnector {
 
     public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
         httpClientContext = HttpClientContext.create();
-        httpClientContext.setCredentialsProvider(credentialsProvider);
+        httpClientContext.setCredentialsProvider(
+                credentialsProvider
+        );
     }
 
     @Override
     protected HttpGet createGET(String uri) {
-        HttpGet httpGet = new HttpGet(uri);
+        HttpGet httpGet = new HttpGet(
+                uri
+        );
 
-        httpGet.addHeader("X-Plex-Version", "2.3.7");
-        httpGet.addHeader("X-Plex-Platform-Version", "39.0");
-        httpGet.addHeader("X-Plex-Client-Identifier", "34a230a9-9a05-4b50-80a0-c38f4ec905e6");
-        httpGet.addHeader("X-Plex-Device-Name", "Plex Web (Chrome)");
-        httpGet.addHeader("X-Plex-Platform", "Chrome");
-        httpGet.addHeader("X-Plex-Product", "Plex Web");
-        httpGet.addHeader("X-Plex-Device", "Linux");
+        httpGet.addHeader(
+                "X-Plex-Version",
+                "2.3.7"
+        );
+        httpGet.addHeader(
+                "X-Plex-Platform-Version",
+                "39.0");
+        httpGet.addHeader(
+                "X-Plex-Client-Identifier",
+                "34a230a9-9a05-4b50-80a0-c38f4ec905e6"
+        );
+        httpGet.addHeader(
+                "X-Plex-Device-Name",
+                "Plex Web (Chrome)"
+        );
+        httpGet.addHeader(
+                "X-Plex-Platform",
+                "Chrome"
+        );
+        httpGet.addHeader(
+                "X-Plex-Product",
+                "Plex Web"
+        );
+        httpGet.addHeader(
+                "X-Plex-Device",
+                "Linux"
+        );
 
         return httpGet;
     }
 
     @Override
     protected HttpPost createPOST(String uri) {
-        HttpPost httpPost = new HttpPost(uri);
+        HttpPost httpPost = new HttpPost(
+                uri
+        );
 
-        httpPost.addHeader("X-Plex-Version", "2.3.7");
-        httpPost.addHeader("X-Plex-Platform-Version", "39.0");
-        httpPost.addHeader("X-Plex-Client-Identifier", "34a230a9-9a05-4b50-80a0-c38f4ec905e6");
-        httpPost.addHeader("X-Plex-Device-Name", "Plex Web (Chrome)");
-        httpPost.addHeader("X-Plex-Platform", "Chrome");
-        httpPost.addHeader("X-Plex-Product", "Plex Web");
-        httpPost.addHeader("X-Plex-Device", "Linux");
+        httpPost.addHeader(
+                "X-Plex-Version",
+                "2.3.7"
+        );
+        httpPost.addHeader(
+                "X-Plex-Platform-Version",
+                "39.0"
+        );
+        httpPost.addHeader(
+                "X-Plex-Client-Identifier",
+                "34a230a9-9a05-4b50-80a0-c38f4ec905e6"
+        );
+        httpPost.addHeader(
+                "X-Plex-Device-Name",
+                "Plex Web (Chrome)"
+        );
+        httpPost.addHeader(
+                "X-Plex-Platform",
+                "Chrome"
+        );
+        httpPost.addHeader(
+                "X-Plex-Product",
+                "Plex Web"
+        );
+        httpPost.addHeader(
+                "X-Plex-Device",
+                "Linux"
+        );
 
         return httpPost;
     }
 
     private void addPlexToken(HttpGet httpGet) throws IOException{
         if (loggedInUser != null || logIn()) {
-            httpGet.addHeader("X-Plex-Token", loggedInUser.getAuthenticationToken());
+            httpGet.addHeader(
+                    "X-Plex-Token",
+                    loggedInUser.getAuthenticationToken()
+            );
         }
     }
 
     public Boolean logIn() throws IOException {
-        HttpPost httpPost = createPOST("https://plex.tv/users/sign_in.xml");
+        HttpPost httpPost = createPOST(
+                "https://plex.tv/users/sign_in.xml"
+        );
 
-        HttpResponse httpResponse = handleResponse(httpPost);
+        HttpResponse httpResponse = handleResponse(
+                httpPost
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        loggedInUser = xmlMapper.readValue(result, User.class);
-        loggedInUser.setUriUsed(httpPost.getURI());
+        loggedInUser = xmlMapper.readValue(
+                result,
+                User.class
+        );
+        loggedInUser.setUriUsed(
+                httpPost.getURI()
+        );
 
         return Boolean.TRUE;
     }
 
     public ServerList getServers() throws IOException {
-        HttpGet httpGet = new HttpGet("https://plex.tv/pms/servers.xml");
-        addPlexToken(httpGet);
+        HttpGet httpGet = new HttpGet(
+                "https://plex.tv/pms/servers.xml"
+        );
+        addPlexToken(
+                httpGet
+        );
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        HttpResponse httpResponse = handleResponse(
+                httpGet
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        ServerList serverList = xmlMapper.readValue(result, ServerList.class);
-        serverList.setUriUsed(httpGet.getURI());
+        ServerList serverList = xmlMapper.readValue(
+                result,
+                ServerList.class
+        );
+        serverList.setUriUsed(
+                httpGet.getURI()
+        );
 
         return serverList;
     }
@@ -109,29 +183,55 @@ public class PlexConnector extends AbstractConnector {
     }
 
     public DeviceList getDevices() throws IOException {
-        HttpGet httpGet = new HttpGet("https://plex.tv/devices.xml");
-        addPlexToken(httpGet);
+        HttpGet httpGet = new HttpGet(
+                "https://plex.tv/devices.xml"
+        );
+        addPlexToken(
+                httpGet
+        );
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        HttpResponse httpResponse = handleResponse(
+                httpGet
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        DeviceList deviceList = xmlMapper.readValue(result, DeviceList.class);
-        deviceList.setUriUsed(httpGet.getURI());
+        DeviceList deviceList = xmlMapper.readValue(
+                result,
+                DeviceList.class
+        );
+        deviceList.setUriUsed(
+                httpGet.getURI()
+        );
 
         return deviceList;
     }
 
     public User getUserAccount() throws IOException {
-        HttpGet httpGet = new HttpGet("https://plex.tv/users/account");
-        addPlexToken(httpGet);
+        HttpGet httpGet = new HttpGet(
+                "https://plex.tv/users/account"
+        );
+        addPlexToken(
+                httpGet
+        );
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        HttpResponse httpResponse = handleResponse(
+                httpGet
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        User user = xmlMapper.readValue(result, User.class);
-        user.setUriUsed(httpGet.getURI());
+        User user = xmlMapper.readValue(
+                result,
+                User.class
+        );
+        user.setUriUsed(
+                httpGet.getURI()
+        );
 
         return user;
     }
@@ -143,15 +243,28 @@ public class PlexConnector extends AbstractConnector {
                 key
         );
 
-        HttpGet httpGet = createGET(uri);
-        addPlexToken(httpGet);
+        HttpGet httpGet = createGET(
+                uri
+        );
+        addPlexToken(
+                httpGet
+        );
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        HttpResponse httpResponse = handleResponse(
+                httpGet
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        DirectoryList directoryList = xmlMapper.readValue(result, DirectoryList.class);
-        directoryList.setUriUsed(httpGet.getURI());
+        DirectoryList directoryList = xmlMapper.readValue(
+                result,
+                DirectoryList.class
+        );
+        directoryList.setUriUsed(
+                httpGet.getURI()
+        );
         return directoryList;
     }
 
@@ -163,7 +276,10 @@ public class PlexConnector extends AbstractConnector {
 
         if (parentDirectoryList != null) {
             if (key.startsWith("/")) {
-                return getMetaData(server, key);
+                return getMetaData(
+                        server,
+                        key
+                );
             } else {
                 uri = String.format(
                         "%s/%s",
@@ -173,15 +289,28 @@ public class PlexConnector extends AbstractConnector {
             }
         }
 
-        HttpGet httpGet = createGET(uri);
-        addPlexToken(httpGet);
+        HttpGet httpGet = createGET(
+                uri
+        );
+        addPlexToken(
+                httpGet
+        );
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        HttpResponse httpResponse = handleResponse(
+                httpGet
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        DirectoryList directoryList = xmlMapper.readValue(result, DirectoryList.class);
-        directoryList.setUriUsed(httpGet.getURI());
+        DirectoryList directoryList = xmlMapper.readValue(
+                result,
+                DirectoryList.class
+        );
+        directoryList.setUriUsed(
+                httpGet.getURI()
+        );
         return directoryList;
     }
 
@@ -196,15 +325,28 @@ public class PlexConnector extends AbstractConnector {
             );
         }
 
-        HttpGet httpGet = createGET(uri);
-        addPlexToken(httpGet);
+        HttpGet httpGet = createGET(
+                uri
+        );
+        addPlexToken(
+                httpGet
+        );
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        HttpResponse httpResponse = handleResponse(
+                httpGet
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        PlayList playList = xmlMapper.readValue(result, PlayList.class);
-        playList.setUriUsed(httpGet.getURI());
+        PlayList playList = xmlMapper.readValue(
+                result,
+                PlayList.class
+        );
+        playList.setUriUsed(
+                httpGet.getURI()
+        );
 
         return playList;
     }
@@ -215,15 +357,28 @@ public class PlexConnector extends AbstractConnector {
                 server.getServerEndpoint()
         );
 
-        HttpGet httpGet = createGET(uri);
-        addPlexToken(httpGet);
+        HttpGet httpGet = createGET(
+                uri
+        );
+        addPlexToken(
+                httpGet
+        );
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        HttpResponse httpResponse = handleResponse(
+                httpGet
+        );
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(
+                httpResponse.getEntity()
+        );
 
-        OnDeckList onDeckList = xmlMapper.readValue(result, OnDeckList.class);
-        onDeckList.setUriUsed(httpGet.getURI());
+        OnDeckList onDeckList = xmlMapper.readValue(
+                result,
+                OnDeckList.class
+        );
+        onDeckList.setUriUsed(
+                httpGet.getURI()
+        );
 
         return onDeckList;
     }

@@ -40,7 +40,9 @@ public class GapCrawler {
     @Autowired
     private AlbumRepository albumRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(GapCrawler.class);
+    private static final Logger log = LoggerFactory.getLogger(
+            GapCrawler.class
+    );
 
     private AlbumList getLastFMAlbums(String artist) throws IOException, LastFMException
     {
@@ -95,7 +97,9 @@ public class GapCrawler {
                             );
 
                             if (lastFMAlbumList.getLastFMAlbums() == null) {
-                                lastFMAlbumList = getLastFMAlbums(lastFMAlbumList.getArtist());
+                                lastFMAlbumList = getLastFMAlbums(
+                                        lastFMAlbumList.getArtist()
+                                );
                             }
 
                             Artist artist = artistRepository.findByPlexKey(
@@ -107,6 +111,7 @@ public class GapCrawler {
                             if (artist == null)
                             {
                                 artist = new Artist();
+
                                 artist.setPlexKey(
                                         artistDirectory.getKey()
                                 );
@@ -144,15 +149,23 @@ public class GapCrawler {
                                                 )
                                         );
 
-                                        Album album = albumRepository.findByLastFMName(lastFMAlbum.getName());
+                                        Album album = albumRepository.findByLastFMName(
+                                                lastFMAlbum.getName()
+                                        );
 
                                         changed = Boolean.FALSE;
 
                                         if (album == null) {
                                             album = new Album();
-                                            album.setArtist(artist);
-                                            album.setLastFMmbId(lastFMAlbum.getMbid());
-                                            album.setLastFMName(lastFMAlbum.getName());
+                                            album.setArtist(
+                                                    artist
+                                            );
+                                            album.setLastFMmbId(
+                                                    lastFMAlbum.getMbid()
+                                            );
+                                            album.setLastFMName(
+                                                    lastFMAlbum.getName()
+                                            );
 
                                             changed = Boolean.TRUE;
                                         }
@@ -163,8 +176,12 @@ public class GapCrawler {
                                             for (Directory albumDirectory : plexAlbumList.getDirectories()) {
                                                 if (albumDirectory.getType() == DirectoryType.album) {
                                                     if (albumDirectory.getTitle().equals(lastFMAlbum.getName())) {
-                                                        album.setPlexKey(albumDirectory.getKey());
-                                                        album.setPlexName(albumDirectory.getTitle());
+                                                        album.setPlexKey(
+                                                                albumDirectory.getKey()
+                                                        );
+                                                        album.setPlexName(
+                                                                albumDirectory.getTitle()
+                                                        );
 
                                                         changed = Boolean.TRUE;
                                                         foundOnPlex = Boolean.TRUE;
@@ -175,14 +192,17 @@ public class GapCrawler {
                                             }
 
                                             log.info(
-                                                    String.format("\t\tFound on plex: %s",
+                                                    String.format(
+                                                            "\t\tFound on plex: %s",
                                                             foundOnPlex ? "YES" : "NO"
                                                     )
                                             );
                                         }
 
                                         if (changed) {
-                                            albumRepository.save(album);
+                                            albumRepository.save(
+                                                    album
+                                            );
                                         }
                                     }
                                 }
@@ -239,10 +259,14 @@ public class GapCrawler {
                                     )
                             );
 
-                            SeriesList seriesList = theTVDBConnector.getSeries(tvShowDirectory.getTitle());
+                            SeriesList seriesList = theTVDBConnector.getSeries(
+                                    tvShowDirectory.getTitle()
+                            );
 
                             if (seriesList.getSeries()[0].getSeriesName().equals(tvShowDirectory.getTitle())) {
-                                log.info("FOUND");
+                                log.info(
+                                        "FOUND"
+                                );
                             }
                         }
                     }

@@ -28,39 +28,66 @@ public abstract class AbstractConnector {
         httpClient = HttpClientBuilder.create().build();
 
         JacksonXmlModule jacksonXmlModule = new JacksonXmlModule();
-        jacksonXmlModule.setDefaultUseWrapper(false);
+        jacksonXmlModule.setDefaultUseWrapper(
+                false
+        );
 
-        xmlMapper = new XmlMapper(jacksonXmlModule);
+        xmlMapper = new XmlMapper(
+                jacksonXmlModule
+        );
     }
 
     protected HttpResponse handleResponse(HttpPost httpPost) throws IOException {
-        HttpResponse httpResponse = httpClient.execute(httpPost, httpClientContext);
+        HttpResponse httpResponse = httpClient.execute(
+                httpPost,
+                httpClientContext
+        );
 
         int code = httpResponse.getStatusLine().getStatusCode();
+
         if (code < 400) {
             return httpResponse;
         }
 
-        throw new IOException(String.format("Code %s returned.", code));
+        throw new IOException(
+                String.format(
+                        "Code %s returned.",
+                        code
+                )
+        );
     }
 
     protected HttpResponse handleResponse(HttpGet httpGet) throws IOException {
-        HttpResponse httpResponse = httpClient.execute(httpGet, httpClientContext);
+        HttpResponse httpResponse = httpClient.execute(
+                httpGet,
+                httpClientContext
+        );
 
         int code = httpResponse.getStatusLine().getStatusCode();
+
         if (code < 400) {
             return httpResponse;
         }
 
-        throw new IOException(String.format("Code %s returned.", code));
+        throw new IOException(
+                String.format(
+                        "Code %s returned.",
+                        code
+                )
+        );
     }
 
     protected String urlEncodeUTF8(String s) {
         if (s != null) {
             try {
-                return URLEncoder.encode(s, "UTF-8");
+                return URLEncoder.encode(
+                        s,
+                        "UTF-8"
+                );
             } catch (UnsupportedEncodingException e) {
-                throw new UnsupportedOperationException(e);
+                throw new UnsupportedOperationException(
+                        e
+                );
             }
         }
 

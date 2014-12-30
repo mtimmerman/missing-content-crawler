@@ -44,7 +44,9 @@ public class Application {
                 )
         );
 
-        plexConnector.setCredentialsProvider(credentialsProvider);
+        plexConnector.setCredentialsProvider(
+                credentialsProvider
+        );
 
         return plexConnector;
     }
