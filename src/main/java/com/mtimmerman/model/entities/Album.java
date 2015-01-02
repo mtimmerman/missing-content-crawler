@@ -59,4 +59,8 @@ public class Album {
     public String getPlexKey() {
         return plexKey;
     }
+
+    public String getLastFMName() {
+        return lastFMName;
+    }
 }

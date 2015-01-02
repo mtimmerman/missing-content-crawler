@@ -64,11 +64,31 @@ public class Episode {
         this.searchName = searchName;
     }
 
+    public String getSearchName() {
+        return searchName;
+    }
+
     public String getPlexName() {
         return plexName;
     }
 
     public String getPlexKey() {
         return plexKey;
+    }
+
+    public String getTheTVDbEpisodeName() {
+        return theTVDbEpisodeName;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public Integer getTheTVDbEpisodeNumber() {
+        return theTVDbEpisodeNumber;
+    }
+
+    public Season getSeason() {
+        return season;
     }
 }

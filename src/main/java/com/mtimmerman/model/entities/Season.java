@@ -72,4 +72,8 @@ public class Season {
     public TvShow getTvShow() {
         return tvShow;
     }
+
+    public Integer getId() {
+        return id;
+    }
 }
