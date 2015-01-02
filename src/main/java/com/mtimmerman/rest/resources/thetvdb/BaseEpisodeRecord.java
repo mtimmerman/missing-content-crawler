@@ -90,4 +90,12 @@ public class BaseEpisodeRecord {
     public Integer getEpisodeNumber() {
         return EpisodeNumber;
     }
+
+    public String getFirstAired() {
+        return firstAired;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
 }

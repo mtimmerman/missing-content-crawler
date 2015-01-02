@@ -11,11 +11,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * Created by maarten on 29.12.14.
@@ -42,7 +38,7 @@ public class TheTVDBConnector extends AbstractConnector {
                 String.format(
                         "GET --> %s",
                         uri
-                )X  ²
+                )
         );
 
         return new HttpGet(uri);
@@ -53,51 +49,6 @@ public class TheTVDBConnector extends AbstractConnector {
         return null;
     }
 
-    private String unzipIt(byte[] input)
-            throws IOException {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-                input
-        );
-
-        ZipInputStream zipInputStream = new ZipInputStream(
-                byteArrayInputStream
-        );
-
-        byte[] buffer = new byte[1024];
-
-        try {
-            ZipEntry zipEntry = zipInputStream.getNextEntry();
-
-            while (zipEntry != null) {
-                String filename = zipEntry.getName();
-
-                if (filename.equals("en.xml")) {
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    Integer length;
-
-                    while ((length = zipInputStream.read(buffer)) > 0) {
-                        byteArrayOutputStream.write(
-                                buffer,
-                                0,
-                                length
-                        );
-                    }
-
-                    return new String(
-                            byteArrayOutputStream.toByteArray(),
-                            "UTF-8"
-                    );
-                }
-
-                zipEntry = zipInputStream.getNextEntry();
-            }
-        } finally {
-            zipInputStream.closeEntry();
-            zipInputStream.close();
-        }
-
-        return null;
-    }
     public FullSeriesRecord getFullSeriesInfo(Integer seriesId)
             throws IOException {
         String uri = String.format(
@@ -146,7 +97,7 @@ public class TheTVDBConnector extends AbstractConnector {
             return null;
         }
 
-        if (seriesList.getValue() != null)
+        if (seriesList.getValue() != null && !seriesList.getValue().isEmpty() && !seriesList.getValue().equals("\n"))
         {
             throw new TheTVDBConnectorException(
                     seriesList.getValue()
@@ -175,12 +126,13 @@ public class TheTVDBConnector extends AbstractConnector {
                 );
             }
         } else {
-            throw new TheTVDBConnectorException(
-                    String.format(
+            log.warn(String.format(
                             "No series with name \"%s\" found on TheTVDb.",
                             seriesName
                     )
             );
         }
+
+        return null;
     }
 }

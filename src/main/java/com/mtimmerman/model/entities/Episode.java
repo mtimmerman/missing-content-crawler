@@ -14,7 +14,10 @@ import javax.validation.constraints.NotNull;
  * Created by maarten on 30.12.14.
  */
 @Entity
-@SequenceGenerator(name = "episode_id_seq", sequenceName = "episode_id_seq")
+@SequenceGenerator(
+        name = "episode_id_seq",
+        sequenceName = "episode_id_seq"
+)
 public class Episode {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "episode_id_seq")
@@ -31,6 +34,12 @@ public class Episode {
     @NotNull
     private String theTVDbEpisodeName;
 
+    @NotNull
+    private Integer theTVDbEpisodeNumber;
+
+    @NotNull
+    private String searchName;
+
     public void setSeason(Season season) {
         this.season = season;
     }
@@ -45,6 +54,14 @@ public class Episode {
 
     public void setTheTVDbEpisodeName(String theTVDbEpisodeName) {
         this.theTVDbEpisodeName = theTVDbEpisodeName;
+    }
+
+    public void setTheTVDbEpisodeNumber(Integer theTVDbEpisodeNumber) {
+        this.theTVDbEpisodeNumber = theTVDbEpisodeNumber;
+    }
+
+    public void setSearchName(String searchName) {
+        this.searchName = searchName;
     }
 
     public String getPlexName() {

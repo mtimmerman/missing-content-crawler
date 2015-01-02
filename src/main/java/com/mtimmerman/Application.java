@@ -1,5 +1,6 @@
 package com.mtimmerman;
 
+import com.mtimmerman.service.KickAssConnector;
 import com.mtimmerman.service.LastFMConnector;
 import com.mtimmerman.service.PlexConnector;
 import com.mtimmerman.service.TheTVDBConnector;
@@ -39,8 +40,12 @@ public class Application {
         credentialsProvider.setCredentials(
                 AuthScope.ANY,
                 new UsernamePasswordCredentials(
-                        env.getRequiredProperty("plex.username"),
-                        env.getRequiredProperty("plex.password")
+                        env.getRequiredProperty(
+                                "plex.username"
+                        ),
+                        env.getRequiredProperty(
+                                "plex.password"
+                        )
                 )
         );
 
@@ -56,11 +61,15 @@ public class Application {
         LastFMConnector lastFMConnector = new LastFMConnector();
 
         lastFMConnector.setApiKey(
-                env.getRequiredProperty("lastFM.apiKey")
+                env.getRequiredProperty(
+                        "lastFM.apiKey"
+                )
         );
 
         lastFMConnector.setBaseUrl(
-                env.getRequiredProperty("lastFM.baseUrl")
+                env.getRequiredProperty(
+                        "lastFM.baseUrl"
+                )
         );
 
         return lastFMConnector;
@@ -71,15 +80,30 @@ public class Application {
         TheTVDBConnector theTVDBConnector = new TheTVDBConnector();
 
         theTVDBConnector.setApiKey(
-                env.getRequiredProperty("theTVDB.apiKey")
+                env.getRequiredProperty(
+                        "theTVDB.apiKey"
+                )
         );
 
         theTVDBConnector.setBaseUrl(
-                env.getRequiredProperty("theTVDB.baseUrl")
+                env.getRequiredProperty(
+                        "theTVDB.baseUrl"
+                )
         );
 
         return theTVDBConnector;
     }
 
+    @Bean
+    public KickAssConnector kickAssConnector() {
+        KickAssConnector kickAssConnector = new KickAssConnector();
 
+        kickAssConnector.setBaseUrl(
+                env.getRequiredProperty(
+                        "kickAss.baseUrl"
+                )
+        );
+
+        return kickAssConnector;
+    }
 }

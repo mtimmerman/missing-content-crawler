@@ -14,7 +14,10 @@ import javax.validation.constraints.NotNull;
  * Created by maarten on 29.12.14.
  */
 @Entity
-@SequenceGenerator(name = "album_id_seq", sequenceName = "album_id_seq")
+@SequenceGenerator(
+        name = "album_id_seq",
+        sequenceName = "album_id_seq"
+)
 public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "album_id_seq")

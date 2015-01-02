@@ -30,6 +30,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -240,8 +242,13 @@ public class GapCrawler {
     }
 
     public void findGapsInTvEpisodes()
-            throws IOException, PlexServerNotFoundException, TheTVDBConnectorException, GapCrawlerException {
+            throws  IOException,
+                    PlexServerNotFoundException,
+                    TheTVDBConnectorException,
+                    GapCrawlerException,
+                    ParseException {
 
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Server server = plexConnector.getServer(
                 env.getRequiredProperty("plex.server")
         );
@@ -375,6 +382,25 @@ public class GapCrawler {
 
                                                     episode.setTheTVDbEpisodeName(
                                                             baseEpisodeRecord.getEpisodeName()
+                                                    );
+
+                                                    episode.setTheTVDbEpisodeNumber(
+                                                            baseEpisodeRecord.getEpisodeNumber()
+                                                    );
+
+                                                    episode.setSearchName(
+                                                            String.format(
+                                                                    "%s S%sE%s",
+                                                                    season.getTvShow().getTheTVDbName(),
+                                                                    String.format(
+                                                                            "%02d",
+                                                                            season.getTheTVDbSeasonNumber()
+                                                                    ),
+                                                                    String.format(
+                                                                            "%02d",
+                                                                            baseEpisodeRecord.getEpisodeNumber()
+                                                                    )
+                                                            )
                                                     );
 
                                                     episodeRepository.save(

@@ -13,7 +13,10 @@ import javax.validation.constraints.NotNull;
  * Created by maarten on 29.12.14.
  */
 @Entity
-@SequenceGenerator(name = "artist_id_seq", sequenceName = "artist_id_seq")
+@SequenceGenerator(
+        name = "artist_id_seq",
+        sequenceName = "artist_id_seq"
+)
 public class Artist {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "artist_id_seq")

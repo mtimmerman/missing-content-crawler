@@ -14,7 +14,10 @@ import javax.validation.constraints.NotNull;
  * Created by maarten on 30.12.14.
  */
 @Entity
-@SequenceGenerator(name = "season_id_seq", sequenceName = "season_id_seq")
+@SequenceGenerator(
+        name = "season_id_seq",
+        sequenceName = "season_id_seq"
+)
 public class Season {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "season_id_seq")
@@ -60,5 +63,13 @@ public class Season {
 
     public String getPlexKey() {
         return plexKey;
+    }
+
+    public Integer getTheTVDbSeasonNumber() {
+        return theTVDbSeasonNumber;
+    }
+
+    public TvShow getTvShow() {
+        return tvShow;
     }
 }
