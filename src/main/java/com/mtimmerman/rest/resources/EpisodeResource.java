@@ -36,4 +36,28 @@ public class EpisodeResource extends ResourceSupport {
     public void setSearchName(String searchName) {
         this.searchName = searchName;
     }
+
+    public Integer getPk() {
+        return pk;
+    }
+
+    public String getPlexName() {
+        return plexName;
+    }
+
+    public String getPlexKey() {
+        return plexKey;
+    }
+
+    public String getTheTVDbEpisodeName() {
+        return theTVDbEpisodeName;
+    }
+
+    public Integer getTheTVDbEpisodeNumber() {
+        return theTVDbEpisodeNumber;
+    }
+
+    public String getSearchName() {
+        return searchName;
+    }
 }

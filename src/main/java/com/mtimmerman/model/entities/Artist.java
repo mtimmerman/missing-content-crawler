@@ -46,4 +46,16 @@ public class Artist {
     public String getLastFMName() {
         return lastFMName;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getPlexKey() {
+        return plexKey;
+    }
+
+    public String getPlexName() {
+        return plexName;
+    }
 }

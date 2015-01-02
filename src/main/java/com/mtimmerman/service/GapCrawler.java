@@ -2,11 +2,14 @@ package com.mtimmerman.service;
 
 import com.mtimmerman.model.entities.Album;
 import com.mtimmerman.model.entities.Artist;
+import com.mtimmerman.model.entities.CrawlerInfo;
 import com.mtimmerman.model.entities.Episode;
 import com.mtimmerman.model.entities.Season;
 import com.mtimmerman.model.entities.TvShow;
+import com.mtimmerman.model.enums.CrawlerType;
 import com.mtimmerman.repositories.AlbumRepository;
 import com.mtimmerman.repositories.ArtistRepository;
+import com.mtimmerman.repositories.CrawlerInfoRepository;
 import com.mtimmerman.repositories.EpisodeRepository;
 import com.mtimmerman.repositories.SeasonRepository;
 import com.mtimmerman.repositories.TvShowRepository;
@@ -25,13 +28,18 @@ import com.mtimmerman.service.exceptions.PlexServerNotFoundException;
 import com.mtimmerman.service.exceptions.TheTVDBConnectorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +47,7 @@ import java.util.Map;
  * Created by maarten on 29.12.14.
  */
 @Component
-public class GapCrawler {
+public class GapCrawler implements ApplicationContextAware {
     @Autowired
     PlexConnector plexConnector;
     @Autowired
@@ -58,10 +66,16 @@ public class GapCrawler {
     private SeasonRepository seasonRepository;
     @Autowired
     private EpisodeRepository episodeRepository;
+    @Autowired
+    private CrawlerInfoRepository crawlerInfoRepository;
+
+    private Boolean stopped = Boolean.FALSE;
 
     private static final Logger log = LoggerFactory.getLogger(
             GapCrawler.class
     );
+
+    private ApplicationContext applicationContext;
 
     private AlbumList getLastFMAlbums(String artist) throws IOException, LastFMException
     {
@@ -524,5 +538,90 @@ public class GapCrawler {
                 }
             }
         }
+    }
+
+    private CrawlerInfo getCrawlerInfo(CrawlerType crawlerType) {
+        CrawlerInfo crawlerInfo = crawlerInfoRepository.findByCrawlerType(
+                crawlerType
+        );
+
+        if (crawlerInfo == null) {
+            crawlerInfo = new CrawlerInfo();
+
+            crawlerInfo.setCrawlerType(
+                    crawlerType
+            );
+
+            crawlerInfo.setProcessing(
+                    false
+            );
+
+            crawlerInfoRepository.save(
+                    crawlerInfo
+            );
+        }
+
+        return crawlerInfo;
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    public void crawlOverGaps()
+            throws IOException,
+                   PlexServerNotFoundException,
+                   TheTVDBConnectorException,
+                   GapCrawlerException,
+                   ParseException,
+                   InterruptedException,
+                   LastFMException {
+
+        while (!stopped) {
+            for (CrawlerType crawlerType : CrawlerType.values()) {
+                CrawlerInfo crawlerInfo = getCrawlerInfo(
+                        crawlerType
+                );
+
+                Date currentDate = new Date();
+
+                Integer gap = 15 * 60 * 1000;
+
+                if (!crawlerInfo.getProcessing()) {
+                    if (crawlerInfo.getLastProcessed() == null || (currentDate.getTime() - crawlerInfo.getLastProcessed().getTime()) > gap) {
+                        crawlerInfo.setProcessing(
+                                true
+                        );
+
+                        crawlerInfoRepository.save(
+                                crawlerInfo
+                        );
+
+                        if (crawlerType == CrawlerType.episodes) {
+                            findGapsInTvEpisodes();
+                        }
+                        if (crawlerType == CrawlerType.albums) {
+                            findGapsInMusic();
+                        }
+
+                        crawlerInfo.setProcessing(
+                                false
+                        );
+
+                        crawlerInfoRepository.save(
+                                crawlerInfo
+                        );
+                    }
+                }
+            }
+
+            Thread.sleep(100000);
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    public void setStopped(Boolean stopped) {
+        this.stopped = stopped;
     }
 }

@@ -47,4 +47,16 @@ public class TvShow {
     public String getTheTVDbName() {
         return theTVDbName;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getPlexName() {
+        return plexName;
+    }
+
+    public String getPlexKey() {
+        return plexKey;
+    }
 }

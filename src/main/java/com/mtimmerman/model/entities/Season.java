@@ -76,4 +76,8 @@ public class Season {
     public Integer getId() {
         return id;
     }
+
+    public Integer getTheTVDbSeasonId() {
+        return theTVDbSeasonId;
+    }
 }

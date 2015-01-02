@@ -63,4 +63,20 @@ public class Album {
     public String getLastFMName() {
         return lastFMName;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getPlexName() {
+        return plexName;
+    }
+
+    public String getLastFMmbId() {
+        return lastFMmbId;
+    }
+
+    public Artist getArtist() {
+        return artist;
+    }
 }
