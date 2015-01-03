@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS --port $PORT -jar target/missing-content-crawler-1.0-SNAPSHOT.jar
+web: java -Dserver.port=$PORT -jar target/missing-content-crawler-1.0-SNAPSHOT.jar
