@@ -290,7 +290,7 @@ public class GapCrawler implements ApplicationContextAware {
                 "plex.server"
         );
 
-        if (serverName == "<skip>") {
+        if (serverName.equals("<skip>")) {
             serverName = System.getenv("PLEX_SERVER");
         }
 
