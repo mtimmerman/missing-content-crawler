@@ -122,7 +122,7 @@ public class GapCrawler implements ApplicationContextAware {
             throws IOException, PlexServerNotFoundException, LastFMException {
 
         Server server = plexConnector.getServer(
-                env.getRequiredProperty("plex.server")
+                getServerName()
         );
 
         DirectoryList root = plexConnector.getSections(
@@ -285,6 +285,18 @@ public class GapCrawler implements ApplicationContextAware {
         }
     }
 
+    private String getServerName() {
+        String serverName = env.getRequiredProperty(
+                "plex.server"
+        );
+
+        if (serverName == "<skip>") {
+            serverName = System.getenv("PLEX_SERVER");
+        }
+
+        return serverName;
+    }
+
     public void findGapsInTvEpisodes()
             throws  IOException,
                     PlexServerNotFoundException,
@@ -294,7 +306,7 @@ public class GapCrawler implements ApplicationContextAware {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Server server = plexConnector.getServer(
-                env.getRequiredProperty("plex.server")
+                getServerName()
         );
 
         DirectoryList root = plexConnector.getSections(

@@ -84,16 +84,28 @@ public class Application {
     public PlexConnector plexConnector() {
         PlexConnector plexConnector = new PlexConnector();
 
+        String username = env.getRequiredProperty(
+                "plex.username"
+        );
+
+        if (username == "<skip>") {
+            username = System.getenv("PLEX_USERNAME");
+        }
+
+        String password = env.getRequiredProperty(
+                "plex.password"
+        );
+
+        if (password == "<skip>") {
+            password = System.getenv("PLEX_PASSWORD");
+        }
+
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(
                 AuthScope.ANY,
                 new UsernamePasswordCredentials(
-                        env.getRequiredProperty(
-                                "plex.username"
-                        ),
-                        env.getRequiredProperty(
-                                "plex.password"
-                        )
+                        username,
+                        password
                 )
         );
 
@@ -108,10 +120,16 @@ public class Application {
     public LastFMConnector lastFMConnector() {
         LastFMConnector lastFMConnector = new LastFMConnector();
 
+        String apiKey = env.getRequiredProperty(
+                "lastFM.apiKey"
+        );
+
+        if (apiKey == "<skip>") {
+            apiKey = System.getenv("LASTFM_APIKEY");
+        }
+
         lastFMConnector.setApiKey(
-                env.getRequiredProperty(
-                        "lastFM.apiKey"
-                )
+                apiKey
         );
 
         lastFMConnector.setBaseUrl(
@@ -127,10 +145,16 @@ public class Application {
     public TheTVDBConnector theTVDBConnector() {
         TheTVDBConnector theTVDBConnector = new TheTVDBConnector();
 
+        String apiKey = env.getRequiredProperty(
+                "theTVDB.baseUrl"
+        );
+
+        if (apiKey == "<skip>") {
+            apiKey = System.getenv("THETVDB_APIKEY");
+        }
+
         theTVDBConnector.setApiKey(
-                env.getRequiredProperty(
-                        "theTVDB.apiKey"
-                )
+                apiKey
         );
 
         theTVDBConnector.setBaseUrl(
