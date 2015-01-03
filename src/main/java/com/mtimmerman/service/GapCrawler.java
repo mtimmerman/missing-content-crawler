@@ -26,6 +26,7 @@ import com.mtimmerman.service.exceptions.GapCrawlerException;
 import com.mtimmerman.service.exceptions.LastFMException;
 import com.mtimmerman.service.exceptions.PlexServerNotFoundException;
 import com.mtimmerman.service.exceptions.TheTVDBConnectorException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -68,6 +69,7 @@ public class GapCrawler implements ApplicationContextAware {
     private EpisodeRepository episodeRepository;
     @Autowired
     private CrawlerInfoRepository crawlerInfoRepository;
+    private StringBuilder stringBuilder = new StringBuilder();
 
     private Boolean stopped = Boolean.FALSE;
 
@@ -85,6 +87,34 @@ public class GapCrawler implements ApplicationContextAware {
                 true,
                 0,
                 999
+        );
+    }
+
+    private void logInfo(String message)
+    {
+        log.info(
+                message
+        );
+
+        stringBuilder.append(
+                String.format(
+                        "INFO:\t%s\n",
+                        message
+                )
+        );
+    }
+
+    private void logWarn(String message)
+    {
+        log.warn(
+                message
+        );
+
+        stringBuilder.append(
+                String.format(
+                        "WARNING:\t%s\n",
+                        message
+                )
         );
     }
 
@@ -118,7 +148,7 @@ public class GapCrawler implements ApplicationContextAware {
                         );
 
                         for (Directory artistDirectory: allArtistsDirectoryList.getDirectories()) {
-                            log.info(
+                            logInfo(
                                     String.format(
                                             "ARTIST: %s",
                                             artistDirectory.getTitle()
@@ -175,7 +205,7 @@ public class GapCrawler implements ApplicationContextAware {
 
                                 if (plexAlbumList.getDirectories() != null) {
                                     for (LastFMAlbum lastFMAlbum : lastFMAlbumList.getLastFMAlbums()) {
-                                        log.info(
+                                        logInfo(
                                                 String.format(
                                                         "\tALBUM: %s",
                                                         lastFMAlbum.getName()
@@ -224,7 +254,7 @@ public class GapCrawler implements ApplicationContextAware {
                                                 }
                                             }
 
-                                            log.info(
+                                            logInfo(
                                                     String.format(
                                                             "\t\tFound on plex: %s",
                                                             foundOnPlex ? "YES" : "NO"
@@ -240,7 +270,7 @@ public class GapCrawler implements ApplicationContextAware {
                                     }
                                 }
                             } else {
-                                log.warn(
+                                logWarn(
                                         String.format(
                                                 "Artist \"%s\" had no albums on LastFM. Corrected to: \"%s\"",
                                                 artistDirectory.getTitle(),
@@ -291,7 +321,7 @@ public class GapCrawler implements ApplicationContextAware {
 
                         for (Directory tvShowDirectory: allTVShowsDirectoryList.getDirectories()) {
                             if (tvShowDirectory.getType() == DirectoryType.show) {
-                                log.info(
+                                logInfo(
                                         String.format(
                                                 "TV SHOW: %s",
                                                 tvShowDirectory.getTitle()
@@ -511,7 +541,7 @@ public class GapCrawler implements ApplicationContextAware {
                                                                     );
                                                                 }
                                                             } else {
-                                                                log.warn(
+                                                                logWarn(
                                                                         String.format(
                                                                                 "Episode \"%s\" was not found on TheTVDb",
                                                                                 episodeVideo.getTitle()
@@ -574,6 +604,8 @@ public class GapCrawler implements ApplicationContextAware {
                    InterruptedException,
                    LastFMException {
 
+        Boolean sleeping = Boolean.FALSE;
+
         while (!stopped) {
             for (CrawlerType crawlerType : CrawlerType.values()) {
                 CrawlerInfo crawlerInfo = getCrawlerInfo(
@@ -586,6 +618,9 @@ public class GapCrawler implements ApplicationContextAware {
 
                 if (!crawlerInfo.getProcessing()) {
                     if (crawlerInfo.getLastProcessed() == null || (currentDate.getTime() - crawlerInfo.getLastProcessed().getTime()) > gap) {
+                        sleeping = Boolean.FALSE;
+                        stringBuilder = new StringBuilder();
+
                         crawlerInfo.setProcessing(
                                 true
                         );
@@ -594,25 +629,59 @@ public class GapCrawler implements ApplicationContextAware {
                                 crawlerInfo
                         );
 
-                        if (crawlerType == CrawlerType.episodes) {
-                            findGapsInTvEpisodes();
-                        }
-                        if (crawlerType == CrawlerType.albums) {
-                            findGapsInMusic();
-                        }
+                        try {
+                            if (crawlerType == CrawlerType.episodes) {
+                                findGapsInTvEpisodes();
+                            }
+                            if (crawlerType == CrawlerType.albums) {
+                                findGapsInMusic();
+                            }
+                        } catch (Exception e) {
+                            String stackTrace = ExceptionUtils.getStackTrace(
+                                    e
+                            );
 
-                        crawlerInfo.setProcessing(
-                                false
-                        );
+                            crawlerInfo.setLatestError(
+                                    e.getMessage()
+                            );
 
-                        crawlerInfoRepository.save(
-                                crawlerInfo
-                        );
+                            crawlerInfo.setLatestErrorOn(
+                                    new Date()
+                            );
+
+                            crawlerInfo.setLatestStackTrace(
+                                    stackTrace
+                            );
+                        } finally {
+                            crawlerInfo.setLog(
+                                    stringBuilder.toString()
+                            );
+
+                            crawlerInfo.setProcessing(
+                                    false
+                            );
+
+                            crawlerInfo.setLastProcessed(
+                                    new Date()
+                            );
+
+                            crawlerInfoRepository.save(
+                                    crawlerInfo
+                            );
+                        }
                     }
                 }
             }
+            if (!sleeping) {
+                sleeping = Boolean.TRUE;
+                logInfo(
+                        "Sleeping..."
+                );
+            }
 
-            Thread.sleep(100000);
+            Thread.sleep(
+                    1000
+            );
         }
     }
 

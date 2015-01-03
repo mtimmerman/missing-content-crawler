@@ -52,6 +52,11 @@ public class TvShowController {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<TvShowResource>> list(
             @RequestParam(
+                    value= "search",
+                    required=false,
+                    defaultValue = ""
+            ) String search,
+            @RequestParam(
                     value = "page",
                     required=false,
                     defaultValue = "0"
@@ -62,13 +67,24 @@ public class TvShowController {
                     defaultValue = "20"
             ) Integer pageSize
     ) {
-
-        Page<TvShow> tvShows =  tvShowRepository.findAll(
-                new PageRequest(
-                        page,
-                        pageSize
-                )
+        Page<TvShow> tvShows;
+        PageRequest pageRequest = new PageRequest(
+                page,
+                pageSize
         );
+        if (!search.isEmpty()) {
+            tvShows = tvShowRepository.findByTheTVDbNameLike(
+                    String.format(
+                            "%%%s%%",
+                            search.toLowerCase()
+                    ),
+                    pageRequest
+            );
+        } else {
+            tvShows = tvShowRepository.findAll(
+                    pageRequest
+            );
+        }
         ArrayList<TvShowResource> tvShowResources = new ArrayList<>();
 
         for (TvShow tvShow : tvShows){
