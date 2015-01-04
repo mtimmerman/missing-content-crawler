@@ -5,8 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mtimmerman</groupId>
     <artifactId>missing-content-crawler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <name>missing-content-crawler</name>
     <packaging>war</packaging>
+    <version>1.0-SNAPSHOT</version>
+
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -86,7 +88,7 @@
                         <version>2.1.1</version>
                         <configuration>
                             <outputDirectory>target</outputDirectory>
-                            <warName>ROOT</warName>
+                            <warName>missing-content-crawler-1.0-SNAPSHOT</warName>
                         </configuration>
                     </plugin>
                 </plugins>
