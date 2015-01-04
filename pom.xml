@@ -3,6 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <groupId>com.mtimmerman</groupId>
+    <artifactId>missing-content-crawler</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>missing-content-crawler</name>
+    <packaging>war</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -10,9 +15,7 @@
         <version>1.1.9.RELEASE</version>
     </parent>
     
-    <groupId>com.mtimmerman</groupId>
-    <artifactId>missing-content-crawler</artifactId>
-    <version>1.0-SNAPSHOT</version>
+
 
     <properties>
         <java.version>1.7</java.version>
@@ -73,4 +76,22 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>openshift</id>
+            <build>
+                <finalName>travel</finalName>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>2.1.1</version>
+                        <configuration>
+                            <outputDirectory>webapps</outputDirectory>
+                            <warName>ROOT</warName>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
