@@ -1,13 +1,6 @@
 package com.mtimmerman;
 
 import com.mtimmerman.service.KickAssConnector;
-import com.mtimmerman.service.LastFMConnector;
-import com.mtimmerman.service.PlexConnector;
-import com.mtimmerman.service.TheTVDBConnector;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -20,7 +13,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -34,84 +26,13 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableJpaRepositories
 @EnableWebMvc
 @EnableEntityLinks
-@EnableScheduling
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class Application {
     @Autowired
-    private ConfigurableEnvironment env;
+    private ConfigurableEnvironment configurableEnvironment;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-    }
-
-    @Bean
-    public PlexConnector plexConnector() {
-        PlexConnector plexConnector = new PlexConnector();
-
-        String username = env.getRequiredProperty(
-                "plex.username"
-        );
-
-        String password = env.getRequiredProperty(
-                "plex.password"
-        );
-
-        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(
-                AuthScope.ANY,
-                new UsernamePasswordCredentials(
-                        username,
-                        password
-                )
-        );
-
-        plexConnector.setCredentialsProvider(
-                credentialsProvider
-        );
-
-        return plexConnector;
-    }
-
-    @Bean
-    public LastFMConnector lastFMConnector() {
-        LastFMConnector lastFMConnector = new LastFMConnector();
-
-        String apiKey = env.getRequiredProperty(
-                "lastFM.apiKey"
-        );
-
-        lastFMConnector.setApiKey(
-                apiKey
-        );
-
-        lastFMConnector.setBaseUrl(
-                env.getRequiredProperty(
-                        "lastFM.baseUrl"
-                )
-        );
-
-        return lastFMConnector;
-    }
-
-    @Bean
-    public TheTVDBConnector theTVDBConnector() {
-        TheTVDBConnector theTVDBConnector = new TheTVDBConnector();
-
-        String apiKey = env.getRequiredProperty(
-                "theTVDB.apiKey"
-        );
-
-        theTVDBConnector.setApiKey(
-                apiKey
-        );
-
-        theTVDBConnector.setBaseUrl(
-                env.getRequiredProperty(
-                        "theTVDB.baseUrl"
-                )
-        );
-
-        return theTVDBConnector;
     }
 
     @Bean
@@ -119,7 +40,7 @@ public class Application {
         KickAssConnector kickAssConnector = new KickAssConnector();
 
         kickAssConnector.setBaseUrl(
-                env.getRequiredProperty(
+                configurableEnvironment.getRequiredProperty(
                         "kickAss.baseUrl"
                 )
         );

@@ -87,4 +87,28 @@ public class CrawlerInfo {
     public Date getLastProcessed() {
         return lastProcessed;
     }
+
+    public CrawlerType getCrawlerType() {
+        return crawlerType;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getLatestStackTrace() {
+        return latestStackTrace;
+    }
+
+    public String getLatestError() {
+        return latestError;
+    }
+
+    public Date getLatestErrorOn() {
+        return latestErrorOn;
+    }
+
+    public String getLog() {
+        return log;
+    }
 }
