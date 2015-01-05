@@ -25,16 +25,38 @@ import java.io.IOException;
 @Component
 @Scope("prototype")
 public class MusicCrawler extends AbstractCrawler {
-    @Autowired
     private LastFMConnector lastFMConnector;
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
     private AlbumRepository albumRepository;
 
+    public LastFMConnector getLastFMConnector() {
+        if (lastFMConnector == null)
+        {
+            lastFMConnector = new LastFMConnector();
+
+            String apiKey = configurableEnvironment.getRequiredProperty(
+                    "lastFM.apiKey"
+            );
+
+            lastFMConnector.setApiKey(
+                    apiKey
+            );
+
+            lastFMConnector.setBaseUrl(
+                    configurableEnvironment.getRequiredProperty(
+                            "lastFM.baseUrl"
+                    )
+            );
+        }
+
+        return lastFMConnector;
+    }
+
     private AlbumList getLastFMAlbums(String artist) throws IOException, LastFMException
     {
-        return lastFMConnector.getArtistGetTopAlbums(
+        return getLastFMConnector().getArtistGetTopAlbums(
                 artist,
                 null,
                 true,
@@ -50,11 +72,11 @@ public class MusicCrawler extends AbstractCrawler {
             IOException,
             GapCrawlerException,
             LastFMException {
-        Server server = plexConnector.getServer(
+        Server server = getPlexConnector().getServer(
                 getServerName()
         );
 
-        DirectoryList root = plexConnector.getSections(
+        DirectoryList root = getPlexConnector().getSections(
                 server,
                 null,
                 null
@@ -62,7 +84,7 @@ public class MusicCrawler extends AbstractCrawler {
 
         for (Directory rootDirectory: root.getDirectories()) {
             if (rootDirectory.getType() == DirectoryType.artist) {
-                DirectoryList artistDirectoryList = plexConnector.getSections(
+                DirectoryList artistDirectoryList = getPlexConnector().getSections(
                         server,
                         root,
                         rootDirectory.getKey()
@@ -70,7 +92,7 @@ public class MusicCrawler extends AbstractCrawler {
 
                 for (Directory musicDirectory: artistDirectoryList.getDirectories()) {
                     if (musicDirectory.getKey().equals("all")) {
-                        DirectoryList allArtistsDirectoryList = plexConnector.getSections(
+                        DirectoryList allArtistsDirectoryList = getPlexConnector().getSections(
                                 server,
                                 artistDirectoryList,
                                 musicDirectory.getKey()
@@ -127,7 +149,7 @@ public class MusicCrawler extends AbstractCrawler {
                             }
 
                             if (lastFMAlbumList.getLastFMAlbums() != null) {
-                                DirectoryList plexAlbumList = plexConnector.getMetaData(
+                                DirectoryList plexAlbumList = getPlexConnector().getMetaData(
                                         server,
                                         artistDirectory.getKey()
                                 );

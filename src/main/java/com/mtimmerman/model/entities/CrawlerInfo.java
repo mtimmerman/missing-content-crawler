@@ -87,4 +87,8 @@ public class CrawlerInfo {
     public Date getLastProcessed() {
         return lastProcessed;
     }
+
+    public CrawlerType getCrawlerType() {
+        return crawlerType;
+    }
 }

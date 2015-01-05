@@ -9,6 +9,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,8 @@ public class GapCrawler implements ApplicationContextAware {
     private CrawlerInfoRepository crawlerInfoRepository;
     @Autowired
     private TaskExecutor taskExecutor;
+    @Autowired
+    private ConfigurableEnvironment configurableEnvironment;
 
     private Boolean stopped = Boolean.FALSE;
 
@@ -65,18 +68,16 @@ public class GapCrawler implements ApplicationContextAware {
 
         while (!stopped) {
             for (CrawlerType crawlerType : CrawlerType.values()) {
-                log.info(crawlerType.toString());
                 CrawlerInfo crawlerInfo = getCrawlerInfo(
                         crawlerType
                 );
 
                 Date currentDate = new Date();
 
-                Integer gap = 15 * 60 * 1000;
+                Integer gap = 10 * 60 * 1000;
 
                 if (!crawlerInfo.getProcessing()) {
                     if (crawlerInfo.getLastProcessed() == null || (currentDate.getTime() - crawlerInfo.getLastProcessed().getTime()) > gap) {
-                        log.info("processing");
                         sleeping = Boolean.FALSE;
 
                         crawlerInfo.setProcessing(

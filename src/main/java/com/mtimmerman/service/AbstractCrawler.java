@@ -8,6 +8,10 @@ import com.mtimmerman.service.exceptions.LastFMException;
 import com.mtimmerman.service.exceptions.PlexServerNotFoundException;
 import com.mtimmerman.service.exceptions.TheTVDBConnectorException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +38,43 @@ public abstract class AbstractCrawler implements Runnable {
 
     @Autowired
     protected CrawlerInfoRepository crawlerInfoRepository;
+    private PlexConnector plexConnector;
     @Autowired
-    protected PlexConnector plexConnector;
-    @Autowired
-    private ConfigurableEnvironment env;
+    protected ConfigurableEnvironment configurableEnvironment;
 
     protected String getServerName() {
-        return env.getRequiredProperty(
+        return configurableEnvironment.getRequiredProperty(
                 "plex.server"
         );
+    }
+
+    public PlexConnector getPlexConnector() {
+        if (plexConnector == null) {
+            plexConnector = new PlexConnector();
+
+            String username = configurableEnvironment.getRequiredProperty(
+                    "plex.username"
+            );
+
+            String password = configurableEnvironment.getRequiredProperty(
+                    "plex.password"
+            );
+
+            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(
+                    AuthScope.ANY,
+                    new UsernamePasswordCredentials(
+                            username,
+                            password
+                    )
+            );
+
+            plexConnector.setCredentialsProvider(
+                    credentialsProvider
+            );
+        }
+
+        return plexConnector;
     }
 
     protected void logInfo(String message)
@@ -92,7 +124,7 @@ public abstract class AbstractCrawler implements Runnable {
             logInfo(
                     String.format(
                             "Processing %s",
-                            crawlerInfo
+                            crawlerInfo.getCrawlerType()
                     )
             );
 
@@ -107,6 +139,10 @@ public abstract class AbstractCrawler implements Runnable {
 
                 crawlerInfo.setLog(
                         stringBuilder.toString()
+                );
+
+                crawlerInfo.setLastProcessed(
+                        new Date()
                 );
 
                 crawlerInfoRepository.save(

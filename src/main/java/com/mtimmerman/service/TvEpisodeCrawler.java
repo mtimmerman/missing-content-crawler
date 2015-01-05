@@ -30,7 +30,6 @@ import java.util.Map;
 @Component
 @Scope("prototype")
 public class TvEpisodeCrawler extends AbstractCrawler {
-    @Autowired
     private TheTVDBConnector theTVDBConnector;
     @Autowired
     private TvShowRepository tvShowRepository;
@@ -39,17 +38,39 @@ public class TvEpisodeCrawler extends AbstractCrawler {
     @Autowired
     private EpisodeRepository episodeRepository;
 
+    public TheTVDBConnector getTheTVDBConnector() {
+        if (theTVDBConnector == null) {
+            theTVDBConnector = new TheTVDBConnector();
+
+            String apiKey = configurableEnvironment.getRequiredProperty(
+                    "theTVDB.apiKey"
+            );
+
+            theTVDBConnector.setApiKey(
+                    apiKey
+            );
+
+            theTVDBConnector.setBaseUrl(
+                    configurableEnvironment.getRequiredProperty(
+                            "theTVDB.baseUrl"
+                    )
+            );
+        }
+
+        return theTVDBConnector;
+    }
+
     @Override
     void process() throws
             PlexServerNotFoundException,
             IOException,
             TheTVDBConnectorException,
             GapCrawlerException {
-        Server server = plexConnector.getServer(
+        Server server = getPlexConnector().getServer(
                 getServerName()
         );
 
-        DirectoryList root = plexConnector.getSections(
+        DirectoryList root = getPlexConnector().getSections(
                 server,
                 null,
                 null
@@ -57,7 +78,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
 
         for (Directory rootDirectory: root.getDirectories()) {
             if (rootDirectory.getType() == DirectoryType.show) {
-                DirectoryList showDirectoryList = plexConnector.getSections(
+                DirectoryList showDirectoryList = getPlexConnector().getSections(
                         server,
                         root,
                         rootDirectory.getKey()
@@ -65,7 +86,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
 
                 for (Directory showDirectory: showDirectoryList.getDirectories()) {
                     if (showDirectory.getKey().equals("all")) {
-                        DirectoryList allTVShowsDirectoryList = plexConnector.getSections(
+                        DirectoryList allTVShowsDirectoryList = getPlexConnector().getSections(
                                 server,
                                 showDirectoryList,
                                 showDirectory.getKey()
@@ -80,7 +101,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                                         )
                                 );
 
-                                FullSeriesRecord fullSeriesRecord = theTVDBConnector.getSeries(
+                                FullSeriesRecord fullSeriesRecord = getTheTVDBConnector().getSeries(
                                         tvShowDirectory.getTitle()
                                 );
 
@@ -216,7 +237,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                                     }
 
 
-                                    DirectoryList seasonsDirectoryList = plexConnector.getMetaData(
+                                    DirectoryList seasonsDirectoryList = getPlexConnector().getMetaData(
                                             server,
                                             tvShowDirectory.getKey()
                                     );
@@ -257,7 +278,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                                                         );
                                                     }
 
-                                                    DirectoryList episodesDirectoryList = plexConnector.getMetaData(
+                                                    DirectoryList episodesDirectoryList = getPlexConnector().getMetaData(
                                                             server,
                                                             seasonDirectory.getKey()
                                                     );

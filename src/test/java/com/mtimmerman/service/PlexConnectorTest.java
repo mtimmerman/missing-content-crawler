@@ -10,7 +10,12 @@ import com.mtimmerman.rest.resources.plex.PlayList;
 import com.mtimmerman.rest.resources.plex.Server;
 import com.mtimmerman.rest.resources.plex.ServerList;
 import com.mtimmerman.rest.resources.plex.User;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +30,35 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 public class PlexConnectorTest {
-    @Autowired
     private PlexConnector plexConnector;
     @Autowired
-    private ConfigurableEnvironment env;
+    private ConfigurableEnvironment configurableEnvironment;
+
+    @Before
+    public void setUp() throws Exception {
+        plexConnector = new PlexConnector();
+
+        String username = configurableEnvironment.getRequiredProperty(
+                "plex.username"
+        );
+
+        String password = configurableEnvironment.getRequiredProperty(
+                "plex.password"
+        );
+
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(
+                AuthScope.ANY,
+                new UsernamePasswordCredentials(
+                        username,
+                        password
+                )
+        );
+
+        plexConnector.setCredentialsProvider(
+                credentialsProvider
+        );
+    }
 
     @Test
     public void testLogin() throws Exception {
@@ -47,7 +77,7 @@ public class PlexConnectorTest {
 
     @Test
     public void testGetServer() throws Exception {
-        String serverName = env.getRequiredProperty("plex.server");
+        String serverName = configurableEnvironment.getRequiredProperty("plex.server");
 
         Server server = plexConnector.getServer(serverName);
 
