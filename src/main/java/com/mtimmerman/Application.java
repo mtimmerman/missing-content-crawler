@@ -4,7 +4,6 @@ import com.mtimmerman.service.KickAssConnector;
 import com.mtimmerman.service.LastFMConnector;
 import com.mtimmerman.service.PlexConnector;
 import com.mtimmerman.service.TheTVDBConnector;
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -26,9 +25,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
  * Created by maarten on 24.12.14.
  */
@@ -49,38 +45,6 @@ public class Application {
     }
 
     @Bean
-    public BasicDataSource dataSource() throws URISyntaxException{
-        String url = System.getenv("DATABASE_URL");
-
-        URI dbUri = new URI(
-                url
-        );
-
-        String username = dbUri.getUserInfo().split(":")[0];
-        String password = dbUri.getUserInfo().split(":")[1];
-        String dbUrl = String.format(
-                "jdbc:postgresql://%s:%s%s?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory",
-                dbUri.getHost(),
-                dbUri.getPort(),
-                dbUri.getPath()
-        );
-
-        BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setUrl(
-                dbUrl
-        );
-        basicDataSource.setUsername(
-                username
-        );
-        basicDataSource.setPassword(
-                password
-        );
-
-
-        return basicDataSource;
-    }
-
-    @Bean
     public PlexConnector plexConnector() {
         PlexConnector plexConnector = new PlexConnector();
 
@@ -88,17 +52,9 @@ public class Application {
                 "plex.username"
         );
 
-        if (username.equals("<skip>")) {
-            username = System.getenv("PLEX_USERNAME");
-        }
-
         String password = env.getRequiredProperty(
                 "plex.password"
         );
-
-        if (password.equals("<skip>")) {
-            password = System.getenv("PLEX_PASSWORD");
-        }
 
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(
@@ -124,10 +80,6 @@ public class Application {
                 "lastFM.apiKey"
         );
 
-        if (apiKey.equals("<skip>")) {
-            apiKey = System.getenv("LASTFM_APIKEY");
-        }
-
         lastFMConnector.setApiKey(
                 apiKey
         );
@@ -148,10 +100,6 @@ public class Application {
         String apiKey = env.getRequiredProperty(
                 "theTVDB.apiKey"
         );
-
-        if (apiKey.equals("<skip>")) {
-            apiKey = System.getenv("THETVDB_APIKEY");
-        }
 
         theTVDBConnector.setApiKey(
                 apiKey

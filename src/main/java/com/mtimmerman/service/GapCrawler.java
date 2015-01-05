@@ -286,15 +286,9 @@ public class GapCrawler implements ApplicationContextAware {
     }
 
     private String getServerName() {
-        String serverName = env.getRequiredProperty(
+        return env.getRequiredProperty(
                 "plex.server"
         );
-
-        if (serverName.equals("<skip>")) {
-            serverName = System.getenv("PLEX_SERVER");
-        }
-
-        return serverName;
     }
 
     public void findGapsInTvEpisodes()
