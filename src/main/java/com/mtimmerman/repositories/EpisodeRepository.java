@@ -28,6 +28,7 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
            "JOIN e.season s " +
            "JOIN s.tvShow t " +
            "WHERE e.plexKey IS NULL " +
+           "AND s.theTVDbSeasonNumber > 0 " +
            "GROUP BY t.theTVDbName, s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber, e.id " +
            "ORDER BY t.theTVDbName, s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber")
     Page<Episode> findNotOnPlex(
@@ -63,6 +64,7 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "JOIN e.season s " +
             "WHERE s.tvShow = :tvShow " +
             "AND e.plexKey IS NULL " +
+            "AND s.theTVDbSeasonNumber > 0 " +
             "GROUP BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber, e.id " +
             "ORDER BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber")
     List<Episode> findByTvShowNotOnPlex(
