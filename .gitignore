@@ -19,3 +19,4 @@ src/main/resources/config/application.properties
 *.DS_Store*
 target/*
 *.iml
+-bla
