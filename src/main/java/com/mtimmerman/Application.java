@@ -88,17 +88,9 @@ public class Application {
                 "plex.username"
         );
 
-        if (username.equals("<skip>")) {
-            username = System.getenv("PLEX_USERNAME");
-        }
-
         String password = env.getRequiredProperty(
                 "plex.password"
         );
-
-        if (password.equals("<skip>")) {
-            password = System.getenv("PLEX_PASSWORD");
-        }
 
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(
@@ -124,10 +116,6 @@ public class Application {
                 "lastFM.apiKey"
         );
 
-        if (apiKey.equals("<skip>")) {
-            apiKey = System.getenv("LASTFM_APIKEY");
-        }
-
         lastFMConnector.setApiKey(
                 apiKey
         );
@@ -148,10 +136,6 @@ public class Application {
         String apiKey = env.getRequiredProperty(
                 "theTVDB.apiKey"
         );
-
-        if (apiKey.equals("<skip>")) {
-            apiKey = System.getenv("THETVDB_APIKEY");
-        }
 
         theTVDBConnector.setApiKey(
                 apiKey
