@@ -20,7 +20,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -34,7 +33,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableJpaRepositories
 @EnableWebMvc
 @EnableEntityLinks
-@EnableScheduling
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class Application {
     @Autowired
