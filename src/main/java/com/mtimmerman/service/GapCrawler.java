@@ -64,6 +64,8 @@ public class GapCrawler implements ApplicationContextAware {
     public void crawlOverGaps()
             throws InterruptedException {
 
+        log.info("Started crawling");
+
         Boolean sleeping = Boolean.FALSE;
 
         while (!stopped) {
