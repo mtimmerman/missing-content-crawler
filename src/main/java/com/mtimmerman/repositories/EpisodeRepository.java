@@ -44,8 +44,20 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "FROM Episode e " +
             "WHERE e.season = :season " +
             "AND e.plexKey IS NULL " +
+            "GROUP BY e.theTVDbEpisodeNumber, e.id " +
             "ORDER BY e.theTVDbEpisodeNumber")
     List<Episode> findBySeasonNotOnPlex(
+            @Param("season") Season season
+    );
+
+    @Query("" +
+            "SELECT count(e) " +
+            "FROM Episode e " +
+            "WHERE e.season = :season " +
+            "AND e.plexKey IS NULL " +
+            "GROUP BY e.theTVDbEpisodeNumber, e.id " +
+            "ORDER BY e.theTVDbEpisodeNumber")
+    Integer countBySeasonNotOnPlex(
             @Param("season") Season season
     );
 
@@ -68,6 +80,18 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "GROUP BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber, e.id " +
             "ORDER BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber")
     List<Episode> findByTvShowNotOnPlex(
+            @Param("tvShow") TvShow tvShow
+    );
+
+    @Query("SELECT count(e) " +
+            "FROM Episode e " +
+            "JOIN e.season s " +
+            "WHERE s.tvShow = :tvShow " +
+            "AND e.plexKey IS NULL " +
+            "AND s.theTVDbSeasonNumber > 0 " +
+            "GROUP BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber, e.id " +
+            "ORDER BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber")
+    Integer countByTvShowNotOnPlex(
             @Param("tvShow") TvShow tvShow
     );
 }

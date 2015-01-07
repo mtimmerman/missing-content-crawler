@@ -224,7 +224,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
         );
     }
 
-    private Boolean findOnTheTVDb(Directory tvShowDirectory)
+    private TvShow findOnTheTVDb(Directory tvShowDirectory)
             throws IOException,
             TheTVDBConnectorException,
             ParseException {
@@ -264,10 +264,10 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                 }
             }
 
-            return Boolean.TRUE;
-        } else {
-            return Boolean.FALSE;
+            return tvShow;
         }
+
+        return null;
     }
 
     private void updateEpisode(Map<Integer, Episode> seasonEpisodes, Video episodeVideo) {
@@ -372,6 +372,24 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                                 }
                             }
                         }
+
+                        Integer count = episodeRepository.countBySeasonNotOnPlex(
+                                season
+                        );
+
+                        if (count == null) {
+                            count = 0;
+                        }
+
+                        if (season.getEpisodesMissing() == null || !season.getEpisodesMissing().equals(count)) {
+                            season.setEpisodesMissing(
+                                    count
+                            );
+
+                            seasonRepository.save(
+                                    season
+                            );
+                        }
                     } else {
                         throw new GapCrawlerException(
                                 String.format(
@@ -420,10 +438,29 @@ public class TvEpisodeCrawler extends AbstractCrawler {
 
                         for (Directory tvShowDirectory : allTVShowsDirectoryList.getDirectories()) {
                             if (tvShowDirectory.getType() == DirectoryType.show) {
-                                if (findOnTheTVDb(tvShowDirectory)) {
+                                TvShow tvShow = findOnTheTVDb(tvShowDirectory);
+                                if (tvShow != null) {
                                     findOnPlex(
                                             server,
                                             tvShowDirectory);
+
+                                    Integer count = episodeRepository.countByTvShowNotOnPlex(
+                                            tvShow
+                                    );
+
+                                    if (count == null) {
+                                        count = 0;
+                                    }
+
+                                    if (tvShow.getEpisodesMissing() == null || !tvShow.getEpisodesMissing().equals(count)) {
+                                        tvShow.setEpisodesMissing(
+                                                count
+                                        );
+
+                                        tvShowRepository.save(
+                                                tvShow
+                                        );
+                                    }
                                 }
                             }
                         }

@@ -10,6 +10,7 @@ public class TvShowResource extends ResourceSupport {
     private String theTVDbName;
     private String plexName;
     private String plexKey;
+    private Integer episodesMissing;
 
     public Integer getPk() {
         return pk;
@@ -41,5 +42,13 @@ public class TvShowResource extends ResourceSupport {
 
     public void setPlexKey(String plexKey) {
         this.plexKey = plexKey;
+    }
+
+    public Integer getEpisodesMissing() {
+        return episodesMissing;
+    }
+
+    public void setEpisodesMissing(Integer episodesMissing) {
+        this.episodesMissing = episodesMissing;
     }
 }

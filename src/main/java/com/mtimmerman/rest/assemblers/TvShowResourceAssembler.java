@@ -28,6 +28,9 @@ public class TvShowResourceAssembler extends ResourceAssemblerSupport<TvShow, Tv
                 tvShow
         );
 
+        tvShowResource.setEpisodesMissing(
+                tvShow.getEpisodesMissing()
+        );
         tvShowResource.setPk(
                 tvShow.getId()
         );
