@@ -31,7 +31,7 @@ public class MusicCrawler extends AbstractCrawler {
     @Autowired
     private AlbumRepository albumRepository;
 
-    public LastFMConnector getLastFMConnector() {
+    private LastFMConnector getLastFMConnector() {
         if (lastFMConnector == null)
         {
             lastFMConnector = new LastFMConnector();
@@ -65,6 +65,113 @@ public class MusicCrawler extends AbstractCrawler {
         );
     }
 
+    private Artist getArtist(
+            Directory artistDirectory,
+            AlbumList lastFMAlbumList
+    ) {
+        Artist artist = artistRepository.findByPlexKey(
+                artistDirectory.getKey()
+        );
+
+        Boolean changed = Boolean.FALSE;
+
+        if (artist == null)
+        {
+            artist = new Artist();
+
+            artist.setPlexKey(
+                    artistDirectory.getKey()
+            );
+            artist.setPlexName(
+                    artistDirectory.getTitle()
+            );
+
+            changed = Boolean.TRUE;
+        }
+
+        if (artist.getLastFMName() == null || !artist.getLastFMName().equals(lastFMAlbumList.getArtist())) {
+            artist.setLastFMName(
+                    lastFMAlbumList.getArtist()
+            );
+
+            changed = Boolean.TRUE;
+        }
+
+        if (changed) {
+            artistRepository.save(artist);
+        }
+
+        return artist;
+    }
+
+    private void getAlbum(
+            LastFMAlbum lastFMAlbum,
+            Artist artist,
+            DirectoryList plexAlbumList
+    ) {
+        logInfo(
+                String.format(
+                        "\tALBUM: %s",
+                        lastFMAlbum.getName()
+                )
+        );
+
+        Album album = albumRepository.findByLastFMName(
+                lastFMAlbum.getName()
+        );
+
+        Boolean changed = Boolean.FALSE;
+
+        if (album == null) {
+            album = new Album();
+            album.setArtist(
+                    artist
+            );
+            album.setLastFMmbId(
+                    lastFMAlbum.getMbid()
+            );
+            album.setLastFMName(
+                    lastFMAlbum.getName()
+            );
+
+            changed = Boolean.TRUE;
+        }
+
+        if (album.getPlexKey() == null) {
+            Boolean foundOnPlex = Boolean.FALSE;
+
+            for (Directory albumDirectory : plexAlbumList.getDirectories()) {
+                if (albumDirectory.getType() == DirectoryType.album) {
+                    if (albumDirectory.getTitle().equals(lastFMAlbum.getName())) {
+                        album.setPlexKey(
+                                albumDirectory.getKey()
+                        );
+                        album.setPlexName(
+                                albumDirectory.getTitle()
+                        );
+
+                        changed = Boolean.TRUE;
+                        foundOnPlex = Boolean.TRUE;
+
+                        break;
+                    }
+                }
+            }
+
+            logInfo(
+                    String.format(
+                            "\t\tFound on plex: %s",
+                            foundOnPlex ? "YES" : "NO"
+                    )
+            );
+        }
+
+        if (changed) {
+            albumRepository.save(
+                    album
+            );
+        }
+    }
 
     @Override
     void process() throws
@@ -116,37 +223,10 @@ public class MusicCrawler extends AbstractCrawler {
                                 );
                             }
 
-                            Artist artist = artistRepository.findByPlexKey(
-                                    artistDirectory.getKey()
+                            Artist artist = getArtist(
+                                    artistDirectory,
+                                    lastFMAlbumList
                             );
-
-                            Boolean changed = Boolean.FALSE;
-
-                            if (artist == null)
-                            {
-                                artist = new Artist();
-
-                                artist.setPlexKey(
-                                        artistDirectory.getKey()
-                                );
-                                artist.setPlexName(
-                                        artistDirectory.getTitle()
-                                );
-
-                                changed = Boolean.TRUE;
-                            }
-
-                            if (artist.getLastFMName() == null || !artist.getLastFMName().equals(lastFMAlbumList.getArtist())) {
-                                artist.setLastFMName(
-                                        lastFMAlbumList.getArtist()
-                                );
-
-                                changed = Boolean.TRUE;
-                            }
-
-                            if (changed) {
-                                artistRepository.save(artist);
-                            }
 
                             if (lastFMAlbumList.getLastFMAlbums() != null) {
                                 DirectoryList plexAlbumList = getPlexConnector().getMetaData(
@@ -156,68 +236,11 @@ public class MusicCrawler extends AbstractCrawler {
 
                                 if (plexAlbumList.getDirectories() != null) {
                                     for (LastFMAlbum lastFMAlbum : lastFMAlbumList.getLastFMAlbums()) {
-                                        logInfo(
-                                                String.format(
-                                                        "\tALBUM: %s",
-                                                        lastFMAlbum.getName()
-                                                )
+                                        getAlbum(
+                                                lastFMAlbum,
+                                                artist,
+                                                plexAlbumList
                                         );
-
-                                        Album album = albumRepository.findByLastFMName(
-                                                lastFMAlbum.getName()
-                                        );
-
-                                        changed = Boolean.FALSE;
-
-                                        if (album == null) {
-                                            album = new Album();
-                                            album.setArtist(
-                                                    artist
-                                            );
-                                            album.setLastFMmbId(
-                                                    lastFMAlbum.getMbid()
-                                            );
-                                            album.setLastFMName(
-                                                    lastFMAlbum.getName()
-                                            );
-
-                                            changed = Boolean.TRUE;
-                                        }
-
-                                        if (album.getPlexKey() == null) {
-                                            Boolean foundOnPlex = Boolean.FALSE;
-
-                                            for (Directory albumDirectory : plexAlbumList.getDirectories()) {
-                                                if (albumDirectory.getType() == DirectoryType.album) {
-                                                    if (albumDirectory.getTitle().equals(lastFMAlbum.getName())) {
-                                                        album.setPlexKey(
-                                                                albumDirectory.getKey()
-                                                        );
-                                                        album.setPlexName(
-                                                                albumDirectory.getTitle()
-                                                        );
-
-                                                        changed = Boolean.TRUE;
-                                                        foundOnPlex = Boolean.TRUE;
-
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
-                                            logInfo(
-                                                    String.format(
-                                                            "\t\tFound on plex: %s",
-                                                            foundOnPlex ? "YES" : "NO"
-                                                    )
-                                            );
-                                        }
-
-                                        if (changed) {
-                                            albumRepository.save(
-                                                    album
-                                            );
-                                        }
                                     }
                                 }
                             } else {

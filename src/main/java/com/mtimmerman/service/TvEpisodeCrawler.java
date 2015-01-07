@@ -40,7 +40,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
     private Map<Season, Map<Integer, Episode>> episodeMap = new HashMap<>();
     private Map<Integer, Season> seasonMap = new HashMap<>();
 
-    public TheTVDBConnector getTheTVDBConnector() {
+    private TheTVDBConnector getTheTVDBConnector() {
         if (theTVDBConnector == null) {
             theTVDBConnector = new TheTVDBConnector();
 
