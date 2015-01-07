@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * Created by maarten on 30.12.14.
@@ -39,6 +40,8 @@ public class Episode {
 
     @NotNull
     private String searchName;
+
+    private Date firstAiredOn;
 
     public void setSeason(Season season) {
         this.season = season;
@@ -90,5 +93,17 @@ public class Episode {
 
     public Season getSeason() {
         return season;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Date getFirstAiredOn() {
+        return firstAiredOn;
+    }
+
+    public void setFirstAiredOn(Date firstAiredOn) {
+        this.firstAiredOn = firstAiredOn;
     }
 }

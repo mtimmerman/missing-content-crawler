@@ -37,6 +37,8 @@ public class Season {
 
     private String plexKey;
 
+    private Integer episodesMissing;
+
     public void setTvShow(TvShow tvShow) {
         this.tvShow = tvShow;
     }
@@ -79,5 +81,13 @@ public class Season {
 
     public Integer getTheTVDbSeasonId() {
         return theTVDbSeasonId;
+    }
+
+    public Integer getEpisodesMissing() {
+        return episodesMissing;
+    }
+
+    public void setEpisodesMissing(Integer episodesMissing) {
+        this.episodesMissing = episodesMissing;
     }
 }

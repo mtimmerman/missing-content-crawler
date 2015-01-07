@@ -32,6 +32,9 @@ public class EpisodeResourceAssembler extends ResourceAssemblerSupport<Episode, 
                 episode
         );
 
+        episodeResource.setFirstAiredOn(
+                episode.getFirstAiredOn()
+        );
         episodeResource.setPk(
                 episode.getId()
         );

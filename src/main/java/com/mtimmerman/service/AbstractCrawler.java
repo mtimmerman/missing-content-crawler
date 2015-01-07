@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Date;
 
 /**
@@ -114,7 +115,8 @@ public abstract class AbstractCrawler implements Runnable {
             IOException,
             TheTVDBConnectorException,
             GapCrawlerException,
-            LastFMException;
+            LastFMException,
+            ParseException;
 
     @Override
     public void run() {

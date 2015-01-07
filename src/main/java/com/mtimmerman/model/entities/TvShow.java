@@ -32,6 +32,8 @@ public class TvShow {
     @NotNull
     private String plexKey;
 
+    private Integer episodesMissing;
+
     public void setTheTVDbName(String theTVDbName) {
         this.theTVDbName = theTVDbName;
     }
@@ -58,5 +60,13 @@ public class TvShow {
 
     public String getPlexKey() {
         return plexKey;
+    }
+
+    public Integer getEpisodesMissing() {
+        return episodesMissing;
+    }
+
+    public void setEpisodesMissing(Integer episodesMissing) {
+        this.episodesMissing = episodesMissing;
     }
 }

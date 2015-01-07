@@ -35,6 +35,9 @@ public class SeasonResourceAssembler extends ResourceAssemblerSupport<Season, Se
                 season
         );
 
+        seasonResource.setEpisodesMissing(
+                season.getEpisodesMissing()
+        );
         seasonResource.setPk(
                 season.getId()
         );

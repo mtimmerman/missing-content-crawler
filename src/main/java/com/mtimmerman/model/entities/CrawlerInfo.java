@@ -40,16 +40,14 @@ public class CrawlerInfo {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastProcessed;
 
-    @Column(name = "latest_stack_trace", columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String latestStackTrace;
 
-    @Column(name = "latest_error")
     private String latestError;
 
-    @Column(name = "latest_error_on")
     private Date latestErrorOn;
 
-    @Column(name = "log", columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String log;
 
     public void setCrawlerType(CrawlerType crawlerType) {

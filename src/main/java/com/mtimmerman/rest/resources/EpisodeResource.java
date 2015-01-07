@@ -1,6 +1,10 @@
 package com.mtimmerman.rest.resources;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.mtimmerman.model.serializers.DateSerializer;
 import org.springframework.hateoas.ResourceSupport;
+
+import java.util.Date;
 
 /**
  * Created by maarten on 02.01.15.
@@ -12,6 +16,7 @@ public class EpisodeResource extends ResourceSupport {
     private String theTVDbEpisodeName;
     private Integer theTVDbEpisodeNumber;
     private String searchName;
+    private Date firstAiredOn;
 
     public void setPk(Integer pk) {
         this.pk = pk;
@@ -59,5 +64,14 @@ public class EpisodeResource extends ResourceSupport {
 
     public String getSearchName() {
         return searchName;
+    }
+
+    @JsonSerialize(using= DateSerializer.class)
+    public Date getFirstAiredOn() {
+        return firstAiredOn;
+    }
+
+    public void setFirstAiredOn(Date firstAiredOn) {
+        this.firstAiredOn = firstAiredOn;
     }
 }
