@@ -21,6 +21,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -150,11 +153,15 @@ public class TvEpisodeCrawler extends AbstractCrawler {
     private void processEpisode(
             Season season,
             BaseEpisodeRecord baseEpisodeRecord
-    ) {
+    ) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyy-MM-dd");
+
         Episode episode = episodeRepository.findBySeasonAndTheTVDbEpisodeName(
                 season,
                 baseEpisodeRecord.getEpisodeName()
         );
+
+        Boolean changed = Boolean.FALSE;
 
         if (episode == null) {
             episode = new Episode();
@@ -186,11 +193,28 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                     )
             );
 
+            changed = Boolean.TRUE;
+        }
+
+        if (baseEpisodeRecord.getFirstAired() != null) {
+            Date firstAired = simpleDateFormat.parse(
+                    baseEpisodeRecord.getFirstAired()
+            );
+
+            if (episode.getFirstAiredOn() == null || episode.getFirstAiredOn().compareTo(firstAired) != 0) {
+                episode.setFirstAiredOn(
+                        firstAired
+                );
+
+                changed = Boolean.TRUE;
+            }
+        }
+
+        if (changed) {
             episodeRepository.save(
                     episode
             );
         }
-
 
         episodeMap.get(
                 season
@@ -200,9 +224,10 @@ public class TvEpisodeCrawler extends AbstractCrawler {
         );
     }
 
-    private void findOnTheTVDb(Directory tvShowDirectory)
+    private Boolean findOnTheTVDb(Directory tvShowDirectory)
             throws IOException,
-            TheTVDBConnectorException {
+            TheTVDBConnectorException,
+            ParseException {
         logInfo(
                 String.format(
                         "TV SHOW: %s",
@@ -238,13 +263,10 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                     }
                 }
             }
+
+            return Boolean.TRUE;
         } else {
-            throw new TheTVDBConnectorException(
-                    String.format(
-                            "No series with name \"%s\" found on theTVDb.",
-                            tvShowDirectory.getTitle()
-                    )
-            );
+            return Boolean.FALSE;
         }
     }
 
@@ -368,7 +390,8 @@ public class TvEpisodeCrawler extends AbstractCrawler {
             PlexServerNotFoundException,
             IOException,
             TheTVDBConnectorException,
-            GapCrawlerException {
+            GapCrawlerException,
+            ParseException {
         Server server = getPlexConnector().getServer(
                 getServerName()
         );
@@ -379,7 +402,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                 null
         );
 
-        for (Directory rootDirectory: root.getDirectories()) {
+        for (Directory rootDirectory : root.getDirectories()) {
             if (rootDirectory.getType() == DirectoryType.show) {
                 DirectoryList showDirectoryList = getPlexConnector().getSections(
                         server,
@@ -387,7 +410,7 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                         rootDirectory.getKey()
                 );
 
-                for (Directory showDirectory: showDirectoryList.getDirectories()) {
+                for (Directory showDirectory : showDirectoryList.getDirectories()) {
                     if (showDirectory.getKey().equals("all")) {
                         DirectoryList allTVShowsDirectoryList = getPlexConnector().getSections(
                                 server,
@@ -395,13 +418,13 @@ public class TvEpisodeCrawler extends AbstractCrawler {
                                 showDirectory.getKey()
                         );
 
-                        for (Directory tvShowDirectory: allTVShowsDirectoryList.getDirectories()) {
+                        for (Directory tvShowDirectory : allTVShowsDirectoryList.getDirectories()) {
                             if (tvShowDirectory.getType() == DirectoryType.show) {
-                                findOnTheTVDb(tvShowDirectory);
-
-                                findOnPlex(
-                                        server,
-                                        tvShowDirectory);
+                                if (findOnTheTVDb(tvShowDirectory)) {
+                                    findOnPlex(
+                                            server,
+                                            tvShowDirectory);
+                                }
                             }
                         }
                     }
