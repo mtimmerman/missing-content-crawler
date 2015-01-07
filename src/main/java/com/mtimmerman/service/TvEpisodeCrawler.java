@@ -37,6 +37,8 @@ public class TvEpisodeCrawler extends AbstractCrawler {
     private SeasonRepository seasonRepository;
     @Autowired
     private EpisodeRepository episodeRepository;
+    private Map<Season, Map<Integer, Episode>> episodeMap = new HashMap<>();
+    private Map<Integer, Season> seasonMap = new HashMap<>();
 
     public TheTVDBConnector getTheTVDBConnector() {
         if (theTVDBConnector == null) {
@@ -58,6 +60,307 @@ public class TvEpisodeCrawler extends AbstractCrawler {
         }
 
         return theTVDBConnector;
+    }
+
+    private TvShow getTvShow(
+            Directory tvShowDirectory,
+            FullSeriesRecord fullSeriesRecord
+    ) {
+        TvShow tvShow = tvShowRepository.findByPlexKey(
+                tvShowDirectory.getKey()
+        );
+
+        Boolean changed = Boolean.FALSE;
+
+        if (tvShow == null) {
+            tvShow = new TvShow();
+
+            tvShow.setPlexKey(
+                    tvShowDirectory.getKey()
+            );
+
+            tvShow.setPlexName(
+                    tvShowDirectory.getTitle()
+            );
+
+            changed = Boolean.TRUE;
+        }
+
+        if (tvShow.getTheTVDbName() == null || !tvShow.getTheTVDbName()
+                .equals(fullSeriesRecord.getBaseSeriesRecord().getSeriesName())) {
+            tvShow.setTheTVDbName(fullSeriesRecord.getBaseSeriesRecord().getSeriesName());
+
+            changed = Boolean.TRUE;
+        }
+
+        if (changed) {
+            tvShowRepository.save(
+                    tvShow
+            );
+        }
+
+        return tvShow;
+    }
+
+    private Season getSeason(
+            BaseEpisodeRecord baseEpisodeRecord,
+            TvShow tvShow
+    ) {
+        Season season;
+
+        if (!seasonMap.containsKey(baseEpisodeRecord.getSeasonNumber())) {
+            season = seasonRepository.findByTvShowAndTheTVDbSeasonNumber(
+                    tvShow,
+                    baseEpisodeRecord.getSeasonNumber()
+            );
+
+            if (season == null) {
+                season = new Season();
+
+                season.setTvShow(
+                        tvShow
+                );
+
+                season.setTheTVDbSeasonNumber(
+                        baseEpisodeRecord.getSeasonNumber()
+                );
+
+                season.setTheTVDbSeasonId(
+                        baseEpisodeRecord.getSeasonId()
+                );
+
+                seasonRepository.save(
+                        season
+                );
+            }
+
+            seasonMap.put(
+                    baseEpisodeRecord.getSeasonNumber(),
+                    season
+            );
+
+            episodeMap.put(season, new HashMap<Integer, Episode>());
+        } else {
+            season = seasonMap.get(baseEpisodeRecord.getSeasonNumber());
+        }
+
+        return season;
+    }
+
+    private void processEpisode(
+            Season season,
+            BaseEpisodeRecord baseEpisodeRecord
+    ) {
+        Episode episode = episodeRepository.findBySeasonAndTheTVDbEpisodeName(
+                season,
+                baseEpisodeRecord.getEpisodeName()
+        );
+
+        if (episode == null) {
+            episode = new Episode();
+
+            episode.setSeason(
+                    season
+            );
+
+            episode.setTheTVDbEpisodeName(
+                    baseEpisodeRecord.getEpisodeName()
+            );
+
+            episode.setTheTVDbEpisodeNumber(
+                    baseEpisodeRecord.getEpisodeNumber()
+            );
+
+            episode.setSearchName(
+                    String.format(
+                            "%s S%sE%s",
+                            season.getTvShow().getTheTVDbName(),
+                            String.format(
+                                    "%02d",
+                                    season.getTheTVDbSeasonNumber()
+                            ),
+                            String.format(
+                                    "%02d",
+                                    baseEpisodeRecord.getEpisodeNumber()
+                            )
+                    )
+            );
+
+            episodeRepository.save(
+                    episode
+            );
+        }
+
+
+        episodeMap.get(
+                season
+        ).put(
+                baseEpisodeRecord.getEpisodeNumber(),
+                episode
+        );
+    }
+
+    private void findOnTheTVDb(Directory tvShowDirectory)
+            throws IOException,
+            TheTVDBConnectorException {
+        logInfo(
+                String.format(
+                        "TV SHOW: %s",
+                        tvShowDirectory.getTitle()
+                )
+        );
+
+        FullSeriesRecord fullSeriesRecord = getTheTVDBConnector().getSeries(
+                tvShowDirectory.getTitle()
+        );
+
+        if (fullSeriesRecord != null) {
+            TvShow tvShow = getTvShow(
+                    tvShowDirectory,
+                    fullSeriesRecord
+            );
+
+            episodeMap = new HashMap<>();
+            seasonMap = new HashMap<>();
+
+            if (fullSeriesRecord.getBaseEpisodeRecords() != null) {
+                for (BaseEpisodeRecord baseEpisodeRecord : fullSeriesRecord.getBaseEpisodeRecords()) {
+                    if (baseEpisodeRecord.getEpisodeName() != null) {
+                        Season season = getSeason(
+                                baseEpisodeRecord,
+                                tvShow
+                        );
+
+                        processEpisode(
+                                season,
+                                baseEpisodeRecord
+                        );
+                    }
+                }
+            }
+        } else {
+            throw new TheTVDBConnectorException(
+                    String.format(
+                            "No series with name \"%s\" found on theTVDb.",
+                            tvShowDirectory.getTitle()
+                    )
+            );
+        }
+    }
+
+    private void updateEpisode(Map<Integer, Episode> seasonEpisodes, Video episodeVideo) {
+        Episode episode = seasonEpisodes.get(
+                episodeVideo.getIndex()
+        );
+
+        Boolean changed = Boolean.FALSE;
+
+        if (episode.getPlexKey() == null || !episode.getPlexKey().equals(episodeVideo.getKey())) {
+            episode.setPlexKey(
+                    episodeVideo.getKey()
+            );
+
+            changed = Boolean.TRUE;
+        }
+
+        if (episode.getPlexName() == null || !episode.getPlexName().equals(episodeVideo.getTitle())) {
+            episode.setPlexName(
+                    episodeVideo.getTitle()
+            );
+
+            changed = Boolean.TRUE;
+        }
+
+        if (changed) {
+            episodeRepository.save(
+                    episode
+            );
+        }
+    }
+
+    private void updateSeason(Season season, Directory seasonDirectory) {
+        Boolean changed = Boolean.FALSE;
+
+        if (season.getPlexKey() == null || !season.getPlexKey().equals(seasonDirectory.getKey())) {
+            season.setPlexKey(
+                    seasonDirectory.getKey()
+            );
+
+            changed = Boolean.TRUE;
+        }
+
+        if (season.getPlexName() == null || !season.getPlexName().equals(seasonDirectory.getTitle())) {
+            season.setPlexName(
+                    seasonDirectory.getTitle()
+            );
+
+            changed = Boolean.TRUE;
+        }
+
+        if (changed) {
+            seasonRepository.save(
+                    season
+            );
+        }
+    }
+
+    private void findOnPlex(Server server, Directory tvShowDirectory)
+            throws IOException, GapCrawlerException {
+        DirectoryList seasonsDirectoryList = getPlexConnector().getMetaData(
+                server,
+                tvShowDirectory.getKey()
+        );
+
+        if (seasonsDirectoryList.getDirectories() != null) {
+            for (Directory seasonDirectory : seasonsDirectoryList.getDirectories()) {
+                if (seasonDirectory.getIndex() != null) {
+                    if (seasonMap.containsKey(seasonDirectory.getIndex())) {
+                        Season season = seasonMap.get(
+                                seasonDirectory.getIndex()
+                        );
+
+                        Map<Integer, Episode> seasonEpisodes = episodeMap.get(
+                                season
+                        );
+
+                        updateSeason(
+                                season,
+                                seasonDirectory
+                        );
+
+                        DirectoryList episodesDirectoryList = getPlexConnector().getMetaData(
+                                server,
+                                seasonDirectory.getKey()
+                        );
+
+                        if (episodesDirectoryList.getVideos() != null) {
+                            for (Video episodeVideo : episodesDirectoryList.getVideos()) {
+                                if (seasonEpisodes.containsKey(episodeVideo.getIndex())) {
+                                    updateEpisode(
+                                            seasonEpisodes,
+                                            episodeVideo
+                                    );
+                                } else {
+                                    logWarn(
+                                            String.format(
+                                                    "Episode \"%s\" was not found on TheTVDb",
+                                                    episodeVideo.getTitle()
+                                            )
+                                    );
+                                }
+                            }
+                        }
+                    } else {
+                        throw new GapCrawlerException(
+                                String.format(
+                                        "Season %s was not found on TheTVDb",
+                                        seasonDirectory.getIndex()
+                                )
+                        );
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -94,247 +397,11 @@ public class TvEpisodeCrawler extends AbstractCrawler {
 
                         for (Directory tvShowDirectory: allTVShowsDirectoryList.getDirectories()) {
                             if (tvShowDirectory.getType() == DirectoryType.show) {
-                                logInfo(
-                                        String.format(
-                                                "TV SHOW: %s",
-                                                tvShowDirectory.getTitle()
-                                        )
-                                );
+                                findOnTheTVDb(tvShowDirectory);
 
-                                FullSeriesRecord fullSeriesRecord = getTheTVDBConnector().getSeries(
-                                        tvShowDirectory.getTitle()
-                                );
-
-                                if (fullSeriesRecord != null) {
-
-                                    TvShow tvShow = tvShowRepository.findByPlexKey(
-                                            tvShowDirectory.getKey()
-                                    );
-
-                                    Boolean changed = Boolean.FALSE;
-
-                                    if (tvShow == null) {
-                                        tvShow = new TvShow();
-
-                                        tvShow.setPlexKey(
-                                                tvShowDirectory.getKey()
-                                        );
-
-                                        tvShow.setPlexName(
-                                                tvShowDirectory.getTitle()
-                                        );
-
-                                        changed = Boolean.TRUE;
-                                    }
-
-                                    if (tvShow.getTheTVDbName() == null || !tvShow.getTheTVDbName()
-                                            .equals(fullSeriesRecord.getBaseSeriesRecord().getSeriesName())) {
-                                        tvShow.setTheTVDbName(fullSeriesRecord.getBaseSeriesRecord().getSeriesName());
-
-                                        changed = Boolean.TRUE;
-                                    }
-
-
-                                    if (changed) {
-                                        tvShowRepository.save(
-                                                tvShow
-                                        );
-                                    }
-
-                                    Map<Season, Map<Integer, Episode>> episodeMap = new HashMap<>();
-                                    Map<Integer, Season> seasonMap = new HashMap<>();
-
-                                    if (fullSeriesRecord.getBaseEpisodeRecords() != null) {
-                                        for (BaseEpisodeRecord baseEpisodeRecord : fullSeriesRecord.getBaseEpisodeRecords()) {
-                                            if (baseEpisodeRecord.getEpisodeName() != null) {
-                                                Season season;
-
-                                                if (!seasonMap.containsKey(baseEpisodeRecord.getSeasonNumber())) {
-                                                    season = seasonRepository.findByTvShowAndTheTVDbSeasonNumber(
-                                                            tvShow,
-                                                            baseEpisodeRecord.getSeasonNumber()
-                                                    );
-
-                                                    if (season == null) {
-                                                        season = new Season();
-
-                                                        season.setTvShow(
-                                                                tvShow
-                                                        );
-
-                                                        season.setTheTVDbSeasonNumber(
-                                                                baseEpisodeRecord.getSeasonNumber()
-                                                        );
-
-                                                        season.setTheTVDbSeasonId(
-                                                                baseEpisodeRecord.getSeasonId()
-                                                        );
-
-                                                        seasonRepository.save(
-                                                                season
-                                                        );
-                                                    }
-
-                                                    seasonMap.put(
-                                                            baseEpisodeRecord.getSeasonNumber(),
-                                                            season
-                                                    );
-
-                                                    episodeMap.put(season, new HashMap<Integer, Episode>());
-                                                } else {
-                                                    season = seasonMap.get(baseEpisodeRecord.getSeasonNumber());
-                                                }
-
-                                                Episode episode = episodeRepository.findBySeasonAndTheTVDbEpisodeName(
-                                                        season,
-                                                        baseEpisodeRecord.getEpisodeName()
-                                                );
-
-                                                if (episode == null) {
-                                                    episode = new Episode();
-
-                                                    episode.setSeason(
-                                                            season
-                                                    );
-
-                                                    episode.setTheTVDbEpisodeName(
-                                                            baseEpisodeRecord.getEpisodeName()
-                                                    );
-
-                                                    episode.setTheTVDbEpisodeNumber(
-                                                            baseEpisodeRecord.getEpisodeNumber()
-                                                    );
-
-                                                    episode.setSearchName(
-                                                            String.format(
-                                                                    "%s S%sE%s",
-                                                                    season.getTvShow().getTheTVDbName(),
-                                                                    String.format(
-                                                                            "%02d",
-                                                                            season.getTheTVDbSeasonNumber()
-                                                                    ),
-                                                                    String.format(
-                                                                            "%02d",
-                                                                            baseEpisodeRecord.getEpisodeNumber()
-                                                                    )
-                                                            )
-                                                    );
-
-                                                    episodeRepository.save(
-                                                            episode
-                                                    );
-                                                }
-
-
-                                                episodeMap.get(
-                                                        season
-                                                ).put(
-                                                        baseEpisodeRecord.getEpisodeNumber(),
-                                                        episode
-                                                );
-                                            }
-                                        }
-                                    }
-
-
-                                    DirectoryList seasonsDirectoryList = getPlexConnector().getMetaData(
-                                            server,
-                                            tvShowDirectory.getKey()
-                                    );
-
-                                    if (seasonsDirectoryList.getDirectories() != null) {
-                                        for (Directory seasonDirectory : seasonsDirectoryList.getDirectories()) {
-                                            if (seasonDirectory.getIndex() != null) {
-                                                if (seasonMap.containsKey(seasonDirectory.getIndex())) {
-                                                    Season season = seasonMap.get(
-                                                            seasonDirectory.getIndex()
-                                                    );
-
-                                                    Map<Integer, Episode> seasonEpisodes = episodeMap.get(
-                                                            season
-                                                    );
-
-                                                    changed = Boolean.FALSE;
-
-                                                    if (season.getPlexKey() == null || !season.getPlexKey().equals(seasonDirectory.getKey())) {
-                                                        season.setPlexKey(
-                                                                seasonDirectory.getKey()
-                                                        );
-
-                                                        changed = Boolean.TRUE;
-                                                    }
-
-                                                    if (season.getPlexName() == null || !season.getPlexName().equals(seasonDirectory.getTitle())) {
-                                                        season.setPlexName(
-                                                                seasonDirectory.getTitle()
-                                                        );
-
-                                                        changed = Boolean.TRUE;
-                                                    }
-
-                                                    if (changed) {
-                                                        seasonRepository.save(
-                                                                season
-                                                        );
-                                                    }
-
-                                                    DirectoryList episodesDirectoryList = getPlexConnector().getMetaData(
-                                                            server,
-                                                            seasonDirectory.getKey()
-                                                    );
-
-                                                    if (episodesDirectoryList.getVideos() != null) {
-                                                        for (Video episodeVideo : episodesDirectoryList.getVideos()) {
-                                                            if (seasonEpisodes.containsKey(episodeVideo.getIndex())) {
-                                                                Episode episode = seasonEpisodes.get(
-                                                                        episodeVideo.getIndex()
-                                                                );
-
-                                                                changed = Boolean.FALSE;
-
-                                                                if (episode.getPlexKey() == null || !episode.getPlexKey().equals(episodeVideo.getKey())) {
-                                                                    episode.setPlexKey(
-                                                                            episodeVideo.getKey()
-                                                                    );
-
-                                                                    changed = Boolean.TRUE;
-                                                                }
-
-                                                                if (episode.getPlexName() == null || !episode.getPlexName().equals(episodeVideo.getTitle())) {
-                                                                    episode.setPlexName(
-                                                                            episodeVideo.getTitle()
-                                                                    );
-
-                                                                    changed = Boolean.TRUE;
-                                                                }
-
-                                                                if (changed) {
-                                                                    episodeRepository.save(
-                                                                            episode
-                                                                    );
-                                                                }
-                                                            } else {
-                                                                logWarn(
-                                                                        String.format(
-                                                                                "Episode \"%s\" was not found on TheTVDb",
-                                                                                episodeVideo.getTitle()
-                                                                        )
-                                                                );
-                                                            }
-                                                        }
-                                                    }
-                                                } else {
-                                                    throw new GapCrawlerException(
-                                                            String.format(
-                                                                    "Season %s was not found on TheTVDb",
-                                                                    seasonDirectory.getIndex()
-                                                            )
-                                                    );
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                findOnPlex(
+                                        server,
+                                        tvShowDirectory);
                             }
                         }
                     }
