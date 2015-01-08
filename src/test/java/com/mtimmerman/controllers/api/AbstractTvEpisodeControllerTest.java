@@ -68,7 +68,7 @@ public abstract class AbstractTvEpisodeControllerTest {
         );
     }
 
-    private Season createSeason(TvShow tvShow) {
+    private Season createSeason(TvShow tvShow, String key, String name, Integer seasonId, Integer seasonNr) {
         Season season = new Season();
 
         season.setEpisodesMissing(
@@ -76,19 +76,19 @@ public abstract class AbstractTvEpisodeControllerTest {
         );
 
         season.setPlexKey(
-                "season1-key"
+                key
         );
 
         season.setPlexName(
-                "season1"
+                name
         );
 
         season.setTheTVDbSeasonId(
-                1
+                seasonId
         );
 
         season.setTheTVDbSeasonNumber(
-                1
+                seasonNr
         );
 
         season.setTvShow(
@@ -176,7 +176,21 @@ public abstract class AbstractTvEpisodeControllerTest {
 
         tvShow = createTvShow();
 
-        season = createSeason(tvShow);
+        season = createSeason(
+                tvShow,
+                "s1-key",
+                "s1",
+                1,
+                1
+        );
+
+        Season season2 = createSeason(
+                tvShow,
+                "s2-key",
+                "s2",
+                2,
+                2
+        );
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(
@@ -200,9 +214,9 @@ public abstract class AbstractTvEpisodeControllerTest {
                 null,
                 null,
                 "search",
-                season,
-                "ep1",
-                1
+                season2,
+                "ep2",
+                2
         );
 
         calendar.add(Calendar.DATE, 10);
@@ -213,18 +227,18 @@ public abstract class AbstractTvEpisodeControllerTest {
                 null,
                 "search",
                 season,
-                "ep1",
-                1
+                "ep3",
+                3
         );
 
         unknownAiredEpisode = createEpisode(
                 null,
-                "ep2-key",
-                "ep2",
+                "ep4-key",
+                "ep4",
                 "search",
                 season,
                 "ep2",
-                2
+                4
         );
     }
 
