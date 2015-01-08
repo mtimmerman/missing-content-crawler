@@ -3,7 +3,7 @@ package com.mtimmerman.assemblers;
 import com.mtimmerman.model.entities.Episode;
 import com.mtimmerman.model.entities.Season;
 import com.mtimmerman.model.entities.TvShow;
-import com.mtimmerman.controllers.EpisodeController;
+import com.mtimmerman.controllers.api.EpisodeController;
 import com.mtimmerman.resources.EpisodeResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;

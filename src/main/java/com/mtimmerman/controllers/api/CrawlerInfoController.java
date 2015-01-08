@@ -1,4 +1,4 @@
-package com.mtimmerman.controllers;
+package com.mtimmerman.controllers.api;
 
 import com.mtimmerman.model.entities.CrawlerInfo;
 import com.mtimmerman.repositories.CrawlerInfoRepository;
@@ -23,7 +23,7 @@ import java.util.List;
  * Created by maarten on 05.01.15.
  */
 @RestController
-@RequestMapping("/crawlerinfos")
+@RequestMapping("/api/crawlerinfos")
 @ExposesResourceFor(CrawlerInfo.class)
 public class CrawlerInfoController {
     @Autowired

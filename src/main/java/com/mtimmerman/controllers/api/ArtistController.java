@@ -1,4 +1,4 @@
-package com.mtimmerman.controllers;
+package com.mtimmerman.controllers.api;
 
 import com.mtimmerman.model.entities.Album;
 import com.mtimmerman.model.entities.Artist;
@@ -28,7 +28,7 @@ import java.util.List;
  * Created by maarten on 02.01.15.
  */
 @RestController
-@RequestMapping("/artists")
+@RequestMapping("/api/artists")
 @ExposesResourceFor(Artist.class)
 public class ArtistController {
     @Autowired

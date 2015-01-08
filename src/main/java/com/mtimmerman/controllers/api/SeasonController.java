@@ -1,17 +1,13 @@
-package com.mtimmerman.controllers;
+package com.mtimmerman.controllers.api;
 
 import com.mtimmerman.model.entities.Episode;
 import com.mtimmerman.model.entities.Season;
-import com.mtimmerman.model.entities.TvShow;
 import com.mtimmerman.repositories.EpisodeRepository;
 import com.mtimmerman.repositories.SeasonRepository;
-import com.mtimmerman.repositories.TvShowRepository;
 import com.mtimmerman.assemblers.EpisodeResourceAssembler;
 import com.mtimmerman.assemblers.SeasonResourceAssembler;
-import com.mtimmerman.assemblers.TvShowResourceAssembler;
 import com.mtimmerman.resources.EpisodeResource;
 import com.mtimmerman.resources.SeasonResource;
-import com.mtimmerman.resources.TvShowResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,30 +28,20 @@ import java.util.List;
  * Created by maarten on 02.01.15.
  */
 @RestController
-@RequestMapping("/tvshows")
-@ExposesResourceFor(TvShow.class)
-public class TvShowController {
-    @Autowired
-    private TvShowRepository tvShowRepository;
+@RequestMapping("/api/seasons")
+@ExposesResourceFor(Season.class)
+public class SeasonController {
     @Autowired
     private SeasonRepository seasonRepository;
     @Autowired
     private EpisodeRepository episodeRepository;
-
-    @Autowired
-    private TvShowResourceAssembler tvShowResourceAssembler;
     @Autowired
     private SeasonResourceAssembler seasonResourceAssembler;
     @Autowired
     private EpisodeResourceAssembler episodeResourceAssembler;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<TvShowResource>> list(
-            @RequestParam(
-                    value= "search",
-                    required=false,
-                    defaultValue = ""
-            ) String search,
+    public ResponseEntity<List<SeasonResource>> list(
             @RequestParam(
                     value = "page",
                     required=false,
@@ -67,55 +53,42 @@ public class TvShowController {
                     defaultValue = "20"
             ) Integer pageSize
     ) {
-        Page<TvShow> tvShows;
-        PageRequest pageRequest = new PageRequest(
-                page,
-                pageSize
+
+        Page<Season> seasons =  seasonRepository.findAll(
+                new PageRequest(
+                        page,
+                        pageSize
+                )
         );
-        if (!search.isEmpty()) {
-            tvShows = tvShowRepository.findByTheTVDbNameLike(
-                    String.format(
-                            "%%%s%%",
-                            search.toLowerCase()
-                    ),
-                    pageRequest
-            );
-        } else {
-            tvShows = tvShowRepository.findAll(
-                    pageRequest
-            );
-        }
-        ArrayList<TvShowResource> tvShowResources = new ArrayList<>();
+        ArrayList<SeasonResource> seasonResources = new ArrayList<>();
 
-        for (TvShow tvShow : tvShows){
-            TvShowResource tvShowResource = tvShowResourceAssembler.toResource(
-                    tvShow
+        for (Season season : seasons){
+            SeasonResource seasonResource = seasonResourceAssembler.toResource(
+                    season
             );
 
-            tvShowResources.add(
-                    tvShowResource
+            seasonResources.add(
+                    seasonResource
             );
         }
-        return new ResponseEntity<List<TvShowResource>>(
-                tvShowResources,
+        return new ResponseEntity<List<SeasonResource>>(
+                seasonResources,
                 HttpStatus.OK
         );
     }
 
     @RequestMapping(value = "/{pk}", method = RequestMethod.GET)
-    public ResponseEntity<TvShowResource> detail(
+    public ResponseEntity<SeasonResource> detail(
             @PathVariable("pk") Integer pk
     ) {
-        TvShow tvShow = tvShowRepository.findOne(
+        Season season = seasonRepository.findOne(
                 pk
         );
 
-        TvShowResource tvShowResource = tvShowResourceAssembler.toResource(
-                tvShow
-        );
+        SeasonResource seasonResource = seasonResourceAssembler.toResource(season);
 
         return new ResponseEntity<>(
-                tvShowResource,
+                seasonResource,
                 HttpStatus.OK
         );
     }
@@ -123,7 +96,7 @@ public class TvShowController {
     private List<EpisodeResource> convertToEpisodeResourceList(List<Episode> episodes) {
         List<EpisodeResource> episodeResources = new ArrayList<>();
 
-        for (Episode episode: episodes) {
+        for (Episode episode : episodes) {
             episodeResources.add(
                     episodeResourceAssembler.toResource(
                             episode
@@ -134,51 +107,19 @@ public class TvShowController {
         return episodeResources;
     }
 
-    @RequestMapping(value = "/{pk}/seasons", method= RequestMethod.GET)
-    public ResponseEntity<List<SeasonResource>> getSeasonsForTvShow(
-            @PathVariable("pk") Integer pk
-    ) {
-        TvShow tvShow = tvShowRepository.findOne(
-                pk
-        );
-
-        if (tvShow != null) {
-            List<SeasonResource> seasonResources = new ArrayList<>();
-
-            List<Season> seasons = seasonRepository.findByTvShowOrderByTheTVDbSeasonNumberAsc(
-                    tvShow
-            );
-
-            for (Season season: seasons) {
-                seasonResources.add(
-                        seasonResourceAssembler.toResource(
-                                season
-                        )
-                );
-            }
-
-            return new ResponseEntity<>(
-                    seasonResources,
-                    HttpStatus.OK
-            );
-        }
-
-        throw new ResourceNotFoundException();
-    }
-
     @RequestMapping(value = "/{pk}/episodes", method= RequestMethod.GET)
-    public ResponseEntity<List<EpisodeResource>> getEpisodesForTvShow(
+    public ResponseEntity<List<EpisodeResource>> getEpisodesForSeason(
             @PathVariable("pk") Integer pk
-    ) {
-        TvShow tvShow = tvShowRepository.findOne(
+    ) throws ResourceNotFoundException {
+        Season season = seasonRepository.findOne(
                 pk
         );
 
-        if (tvShow != null) {
+        if (season != null) {
             return new ResponseEntity<>(
                     convertToEpisodeResourceList(
-                            episodeRepository.findByTvShow(
-                                    tvShow
+                            episodeRepository.findBySeasonOrderByTheTVDbEpisodeNumberAsc(
+                                    season
                             )
                     ),
                     HttpStatus.OK
@@ -189,18 +130,18 @@ public class TvShowController {
     }
 
     @RequestMapping(value = "/{pk}/episodes-not-on-plex", method= RequestMethod.GET)
-    public ResponseEntity<List<EpisodeResource>> getEpisodesForTvShowNotOnPlex(
+    public ResponseEntity<List<EpisodeResource>> getEpisodesForSeasonNotOnPlex(
             @PathVariable("pk") Integer pk
-    ) {
-        TvShow tvShow = tvShowRepository.findOne(
+    ) throws ResourceNotFoundException {
+        Season season = seasonRepository.findOne(
                 pk
         );
 
-        if (tvShow != null) {
+        if (season != null) {
             return new ResponseEntity<>(
                     convertToEpisodeResourceList(
-                            episodeRepository.findByTvShowNotOnPlex(
-                                    tvShow
+                            episodeRepository.findBySeasonNotOnPlex(
+                                    season
                             )
                     ),
                     HttpStatus.OK

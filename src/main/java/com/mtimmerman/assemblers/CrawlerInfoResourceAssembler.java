@@ -1,7 +1,7 @@
 package com.mtimmerman.assemblers;
 
 import com.mtimmerman.model.entities.CrawlerInfo;
-import com.mtimmerman.controllers.CrawlerInfoController;
+import com.mtimmerman.controllers.api.CrawlerInfoController;
 import com.mtimmerman.resources.CrawlerInfoResource;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;

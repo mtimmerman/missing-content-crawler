@@ -95,10 +95,6 @@ public class Episode {
         return season;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Date getFirstAiredOn() {
         return firstAiredOn;
     }

@@ -2,7 +2,7 @@ package com.mtimmerman.assemblers;
 
 import com.mtimmerman.model.entities.Season;
 import com.mtimmerman.model.entities.TvShow;
-import com.mtimmerman.controllers.SeasonController;
+import com.mtimmerman.controllers.api.SeasonController;
 import com.mtimmerman.resources.SeasonResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;

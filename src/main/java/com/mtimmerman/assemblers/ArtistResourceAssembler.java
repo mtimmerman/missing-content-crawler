@@ -1,7 +1,7 @@
 package com.mtimmerman.assemblers;
 
 import com.mtimmerman.model.entities.Artist;
-import com.mtimmerman.controllers.ArtistController;
+import com.mtimmerman.controllers.api.ArtistController;
 import com.mtimmerman.resources.ArtistResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;

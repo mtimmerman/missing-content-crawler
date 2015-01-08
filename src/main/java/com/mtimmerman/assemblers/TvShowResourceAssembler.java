@@ -1,7 +1,7 @@
 package com.mtimmerman.assemblers;
 
 import com.mtimmerman.model.entities.TvShow;
-import com.mtimmerman.controllers.TvShowController;
+import com.mtimmerman.controllers.api.TvShowController;
 import com.mtimmerman.resources.TvShowResource;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;

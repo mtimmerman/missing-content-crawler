@@ -1,9 +1,9 @@
-package com.mtimmerman.controllers;
+package com.mtimmerman.controllers.api;
 
-import com.mtimmerman.model.entities.Album;
-import com.mtimmerman.repositories.AlbumRepository;
-import com.mtimmerman.assemblers.AlbumResourceAssembler;
-import com.mtimmerman.resources.AlbumResource;
+import com.mtimmerman.model.entities.Episode;
+import com.mtimmerman.repositories.EpisodeRepository;
+import com.mtimmerman.assemblers.EpisodeResourceAssembler;
+import com.mtimmerman.resources.EpisodeResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,16 +23,16 @@ import java.util.List;
  * Created by maarten on 02.01.15.
  */
 @RestController
-@RequestMapping("/albums")
-@ExposesResourceFor(Album.class)
-public class AlbumController {
+@RequestMapping("/api/episodes")
+@ExposesResourceFor(Episode.class)
+public class EpisodeController {
     @Autowired
-    private AlbumRepository albumRepository;
+    private EpisodeRepository episodeRepository;
     @Autowired
-    private AlbumResourceAssembler albumResourceAssembler;
+    private EpisodeResourceAssembler episodeResourceAssembler;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<AlbumResource>> list(
+    public ResponseEntity<List<EpisodeResource>> list(
             @RequestParam(
                     value = "page",
                     required=false,
@@ -45,49 +45,49 @@ public class AlbumController {
             ) Integer pageSize
     ) {
 
-        Page<Album> albums =  albumRepository.findAll(
+        Page<Episode> episodes =  episodeRepository.findAll(
                 new PageRequest(
                         page,
                         pageSize
                 )
         );
-        ArrayList<AlbumResource> albumResources = new ArrayList<>();
+        ArrayList<EpisodeResource> episodeResources = new ArrayList<>();
 
-        for (Album album : albums){
-            AlbumResource albumResource = albumResourceAssembler.toResource(
-                    album
+        for (Episode episode : episodes){
+            EpisodeResource episodeResource = episodeResourceAssembler.toResource(
+                    episode
             );
 
-            albumResources.add(
-                    albumResource
+            episodeResources.add(
+                    episodeResource
             );
         }
-        return new ResponseEntity<List<AlbumResource>>(
-                albumResources,
+        return new ResponseEntity<List<EpisodeResource>>(
+                episodeResources,
                 HttpStatus.OK
         );
     }
 
     @RequestMapping(value = "/{pk}", method = RequestMethod.GET)
-    public ResponseEntity<AlbumResource> detail(
+    public ResponseEntity<EpisodeResource> detail(
             @PathVariable("pk") Integer pk
     ) {
-        Album album = albumRepository.findOne(
+        Episode episode = episodeRepository.findOne(
                 pk
         );
 
-        AlbumResource albumResource = albumResourceAssembler.toResource(
-                album
+        EpisodeResource episodeResource = episodeResourceAssembler.toResource(
+                episode
         );
 
         return new ResponseEntity<>(
-                albumResource,
+                episodeResource,
                 HttpStatus.OK
         );
     }
 
     @RequestMapping(value = "/not-on-plex", method=RequestMethod.GET)
-    public ResponseEntity<List<AlbumResource>> listNotOnPlex(
+    public ResponseEntity<List<EpisodeResource>> listNotOnPlex(
             @RequestParam(
                     value = "page",
                     required=false,
@@ -99,26 +99,26 @@ public class AlbumController {
                     defaultValue = "20"
             ) Integer pageSize
     ) {
-        Page<Album> albums =  albumRepository.findNotOnPlex(
+        Page<Episode> episodes =  episodeRepository.findNotOnPlex(
                 new PageRequest(
                         page,
                         pageSize
                 )
         );
 
-        ArrayList<AlbumResource> albumResources = new ArrayList<>();
+        ArrayList<EpisodeResource> episodeResources = new ArrayList<>();
 
-        for (Album album : albums){
-            AlbumResource albumResource = albumResourceAssembler.toResource(
-                    album
+        for (Episode episode : episodes){
+            EpisodeResource episodeResource = episodeResourceAssembler.toResource(
+                    episode
             );
 
-            albumResources.add(
-                    albumResource
+            episodeResources.add(
+                    episodeResource
             );
         }
-        return new ResponseEntity<List<AlbumResource>>(
-                albumResources,
+        return new ResponseEntity<List<EpisodeResource>>(
+                episodeResources,
                 HttpStatus.OK
         );
     }
