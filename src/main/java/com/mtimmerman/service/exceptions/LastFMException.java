@@ -1,6 +1,6 @@
 package com.mtimmerman.service.exceptions;
 
-import com.mtimmerman.rest.resources.lastfm.enums.ErrorCode;
+import com.mtimmerman.resources.lastfm.enums.ErrorCode;
 
 /**
  * Created by maarten on 29.12.14.

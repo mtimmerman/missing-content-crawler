@@ -1,8 +1,8 @@
 package com.mtimmerman.service;
 
-import com.mtimmerman.rest.resources.lastfm.AlbumList;
-import com.mtimmerman.rest.resources.lastfm.LastFMContainer;
-import com.mtimmerman.rest.resources.lastfm.enums.LastFMStatus;
+import com.mtimmerman.resources.lastfm.AlbumList;
+import com.mtimmerman.resources.lastfm.LastFMContainer;
+import com.mtimmerman.resources.lastfm.enums.LastFMStatus;
 import com.mtimmerman.service.exceptions.LastFMException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
