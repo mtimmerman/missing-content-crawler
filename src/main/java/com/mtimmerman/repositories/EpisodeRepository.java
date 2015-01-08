@@ -29,6 +29,8 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
            "JOIN s.tvShow t " +
            "WHERE e.plexKey IS NULL " +
            "AND s.theTVDbSeasonNumber > 0 " +
+           "AND (e.firstAiredOn is null " +
+           "OR e.firstAiredOn < current_date) " +
            "GROUP BY t.theTVDbName, s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber, e.id " +
            "ORDER BY t.theTVDbName, s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber")
     Page<Episode> findNotOnPlex(
@@ -44,6 +46,8 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "FROM Episode e " +
             "WHERE e.season = :season " +
             "AND e.plexKey IS NULL " +
+            "AND (e.firstAiredOn is null " +
+            "OR e.firstAiredOn < current_date) " +
             "GROUP BY e.theTVDbEpisodeNumber, e.id " +
             "ORDER BY e.theTVDbEpisodeNumber")
     List<Episode> findBySeasonNotOnPlex(
@@ -55,6 +59,8 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "FROM Episode e " +
             "WHERE e.season = :season " +
             "AND e.plexKey IS NULL " +
+            "AND (e.firstAiredOn is null " +
+            "OR e.firstAiredOn < current_date) " +
             "GROUP BY e.theTVDbEpisodeNumber, e.id " +
             "ORDER BY e.theTVDbEpisodeNumber")
     Integer countBySeasonNotOnPlex(
@@ -77,6 +83,8 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "WHERE s.tvShow = :tvShow " +
             "AND e.plexKey IS NULL " +
             "AND s.theTVDbSeasonNumber > 0 " +
+            "AND (e.firstAiredOn is null " +
+            "OR e.firstAiredOn < current_date) " +
             "GROUP BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber, e.id " +
             "ORDER BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber")
     List<Episode> findByTvShowNotOnPlex(
@@ -89,6 +97,8 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "WHERE s.tvShow = :tvShow " +
             "AND e.plexKey IS NULL " +
             "AND s.theTVDbSeasonNumber > 0 " +
+            "AND (e.firstAiredOn is null " +
+            "OR e.firstAiredOn < current_date) " +
             "GROUP BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber, e.id " +
             "ORDER BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber")
     Integer countByTvShowNotOnPlex(
