@@ -1,7 +1,7 @@
 package com.mtimmerman.service;
 
 import com.mtimmerman.Application;
-import com.mtimmerman.resources.lastfm.AlbumList;
+import com.mtimmerman.domain.lastfm.AlbumList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

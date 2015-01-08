@@ -1,8 +1,8 @@
 package com.mtimmerman.service;
 
-import com.mtimmerman.resources.thetvdb.FullSeriesRecord;
-import com.mtimmerman.resources.thetvdb.Series;
-import com.mtimmerman.resources.thetvdb.SeriesList;
+import com.mtimmerman.domain.thetvdb.FullSeriesRecord;
+import com.mtimmerman.domain.thetvdb.Series;
+import com.mtimmerman.domain.thetvdb.SeriesList;
 import com.mtimmerman.service.exceptions.TheTVDBConnectorException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;

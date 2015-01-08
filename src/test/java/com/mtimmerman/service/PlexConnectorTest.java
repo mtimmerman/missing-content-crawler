@@ -2,14 +2,14 @@ package com.mtimmerman.service;
 
 
 import com.mtimmerman.Application;
-import com.mtimmerman.resources.plex.DeviceList;
-import com.mtimmerman.resources.plex.Directory;
-import com.mtimmerman.resources.plex.DirectoryList;
-import com.mtimmerman.resources.plex.OnDeckList;
-import com.mtimmerman.resources.plex.PlayList;
-import com.mtimmerman.resources.plex.Server;
-import com.mtimmerman.resources.plex.ServerList;
-import com.mtimmerman.resources.plex.User;
+import com.mtimmerman.domain.plex.DeviceList;
+import com.mtimmerman.domain.plex.Directory;
+import com.mtimmerman.domain.plex.DirectoryList;
+import com.mtimmerman.domain.plex.OnDeckList;
+import com.mtimmerman.domain.plex.PlayList;
+import com.mtimmerman.domain.plex.Server;
+import com.mtimmerman.domain.plex.ServerList;
+import com.mtimmerman.domain.plex.User;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
