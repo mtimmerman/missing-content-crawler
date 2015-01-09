@@ -51,6 +51,7 @@ public class LastFMConnectorTest {
                 50
         );
 
+        Assert.assertNotNull(albumList);
         Assert.assertEquals(50, albumList.getLastFMAlbums().length);
         Assert.assertTrue(albumList.getTotalPages() > 1);
     }

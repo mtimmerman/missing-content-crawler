@@ -1,11 +1,5 @@
 package com.mtimmerman.service;
 
-import com.mtimmerman.model.entities.Episode;
-import com.mtimmerman.model.entities.Season;
-import com.mtimmerman.model.entities.TvShow;
-import com.mtimmerman.repositories.EpisodeRepository;
-import com.mtimmerman.repositories.SeasonRepository;
-import com.mtimmerman.repositories.TvShowRepository;
 import com.mtimmerman.domain.plex.Directory;
 import com.mtimmerman.domain.plex.DirectoryList;
 import com.mtimmerman.domain.plex.Server;
@@ -13,6 +7,12 @@ import com.mtimmerman.domain.plex.Video;
 import com.mtimmerman.domain.plex.enums.DirectoryType;
 import com.mtimmerman.domain.thetvdb.BaseEpisodeRecord;
 import com.mtimmerman.domain.thetvdb.FullSeriesRecord;
+import com.mtimmerman.model.entities.Episode;
+import com.mtimmerman.model.entities.Season;
+import com.mtimmerman.model.entities.TvShow;
+import com.mtimmerman.repositories.EpisodeRepository;
+import com.mtimmerman.repositories.SeasonRepository;
+import com.mtimmerman.repositories.TvShowRepository;
 import com.mtimmerman.service.exceptions.GapCrawlerException;
 import com.mtimmerman.service.exceptions.PlexServerNotFoundException;
 import com.mtimmerman.service.exceptions.TheTVDBConnectorException;

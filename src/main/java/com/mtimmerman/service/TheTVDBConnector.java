@@ -3,6 +3,7 @@ package com.mtimmerman.service;
 import com.mtimmerman.domain.thetvdb.FullSeriesRecord;
 import com.mtimmerman.domain.thetvdb.Series;
 import com.mtimmerman.domain.thetvdb.SeriesList;
+import com.mtimmerman.service.exceptions.HttpException;
 import com.mtimmerman.service.exceptions.TheTVDBConnectorException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -49,7 +50,7 @@ public class TheTVDBConnector extends AbstractConnector {
         return null;
     }
 
-    public FullSeriesRecord getFullSeriesInfo(Integer seriesId)
+    private FullSeriesRecord getFullSeriesInfo(Integer seriesId)
             throws IOException {
         String uri = String.format(
                 "%s/api/%s/series/%s/all/en.zip",
@@ -58,21 +59,36 @@ public class TheTVDBConnector extends AbstractConnector {
                 seriesId
         );
 
-        HttpGet httpGet = createGET(uri);
+        Boolean retry = Boolean.TRUE;
+        Integer retryCount = 0;
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        while (retry && retryCount < 3) {
+            HttpGet httpGet = createGET(uri);
 
-        String result = unzipIt(
-                EntityUtils.toByteArray(
-                        httpResponse.getEntity()
-                )
-        );
+            try {
+                HttpResponse httpResponse = handleResponse(httpGet);
 
-        try {
-            return xmlMapper.readValue(result, FullSeriesRecord.class);
-        } catch (Exception e) {
-            throw e;
+                String result = unzipIt(
+                        EntityUtils.toByteArray(
+                                httpResponse.getEntity()
+                        )
+                );
+
+                return xmlMapper.readValue(
+                        result,
+                        FullSeriesRecord.class
+                );
+            } catch (HttpException e) {
+                retry = e.getCode() == 522;
+                if (!retry) {
+                    throw e;
+                } else {
+                    retryCount++;
+                }
+            }
         }
+
+        return null;
     }
 
     public FullSeriesRecord getSeries(String seriesName)

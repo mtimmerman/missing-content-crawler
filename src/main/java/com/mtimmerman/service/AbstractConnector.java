@@ -2,6 +2,7 @@ package com.mtimmerman.service;
 
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.mtimmerman.service.exceptions.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -148,11 +149,12 @@ public abstract class AbstractConnector {
             return httpResponse;
         }
 
-        throw new IOException(
+        throw new HttpException(
                 String.format(
                         "Code %s returned.",
                         code
-                )
+                ),
+                code
         );
     }
 

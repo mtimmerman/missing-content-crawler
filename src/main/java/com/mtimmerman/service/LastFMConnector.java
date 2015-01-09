@@ -3,6 +3,7 @@ package com.mtimmerman.service;
 import com.mtimmerman.domain.lastfm.AlbumList;
 import com.mtimmerman.domain.lastfm.LastFMContainer;
 import com.mtimmerman.domain.lastfm.enums.LastFMStatus;
+import com.mtimmerman.service.exceptions.HttpException;
 import com.mtimmerman.service.exceptions.LastFMException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -70,30 +71,46 @@ public class LastFMConnector extends AbstractConnector {
                 )
         );
 
-        HttpGet httpGet = createGET(
-                uri
-        );
+        Boolean retry = Boolean.TRUE;
+        Integer retryCount = 0;
 
-        HttpResponse httpResponse = handleResponse(
-                httpGet
-        );
-
-        String result = EntityUtils.toString(
-                httpResponse.getEntity()
-        );
-
-        LastFMContainer lastFMContainer = xmlMapper.readValue(
-                result,
-                LastFMContainer.class
-        );
-
-        if (lastFMContainer.getLastFMStatus() == LastFMStatus.failed) {
-            throw new LastFMException(
-                    lastFMContainer.getError().getMessage(),
-                    lastFMContainer.getError().getCode()
+        while (retry && retryCount < 3) {
+            HttpGet httpGet = createGET(
+                    uri
             );
+
+            try {
+                HttpResponse httpResponse = handleResponse(
+                        httpGet
+                );
+
+                String result = EntityUtils.toString(
+                        httpResponse.getEntity()
+                );
+
+                LastFMContainer lastFMContainer = xmlMapper.readValue(
+                        result,
+                        LastFMContainer.class
+                );
+
+                if (lastFMContainer.getLastFMStatus() == LastFMStatus.failed) {
+                    throw new LastFMException(
+                            lastFMContainer.getError().getMessage(),
+                            lastFMContainer.getError().getCode()
+                    );
+                }
+
+                return lastFMContainer.getTopAlbums();
+            } catch (HttpException e) {
+                retry = e.getCode() == 522;
+                if (!retry) {
+                    throw e;
+                } else {
+                    retryCount++;
+                }
+            }
         }
 
-        return lastFMContainer.getTopAlbums();
+        return null;
     }
 }
