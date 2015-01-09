@@ -99,54 +99,67 @@ public class TheTVDBConnector extends AbstractConnector {
                 urlEncodeUTF8(seriesName)
         );
 
-        HttpGet httpGet = createGET(uri);
+        Boolean retry = Boolean.TRUE;
+        Integer retryCount = 0;
 
-        HttpResponse httpResponse = handleResponse(httpGet);
+        while (retry && retryCount < 3) {
+            HttpGet httpGet = createGET(uri);
 
-        String result = EntityUtils.toString(httpResponse.getEntity());
+            try {
+                HttpResponse httpResponse = handleResponse(httpGet);
 
-        SeriesList seriesList = null;
+                String result = EntityUtils.toString(httpResponse.getEntity());
 
-        try {
-            seriesList = xmlMapper.readValue(result, SeriesList.class);
-        } catch (IOException ignored) {
-            return null;
-        }
+                SeriesList seriesList = null;
 
-        if (seriesList.getValue() != null && !seriesList.getValue().isEmpty() && !seriesList.getValue().equals("\n"))
-        {
-            throw new TheTVDBConnectorException(
-                    seriesList.getValue()
-            );
-        }
-
-        if (seriesList.getSeries() != null && seriesList.getSeries().length > 0) {
-            if (seriesList.getSeries().length == 1) {
-                return getFullSeriesInfo(
-                        seriesList.getSeries()[0].getId()
-                );
-            } else {
-                for (Series series: seriesList.getSeries()) {
-                    if (series.getSeriesName().equals(seriesName)) {
-                        return getFullSeriesInfo(
-                                series.getId()
-                        );
-                    }
+                try {
+                    seriesList = xmlMapper.readValue(result, SeriesList.class);
+                } catch (IOException ignored) {
+                    return null;
                 }
 
-                throw new TheTVDBConnectorException(
-                        String.format(
-                                "Multiple series with name \"%s\" found on TheTVDb but none were an exact match.",
-                                seriesName
-                        )
-                );
+                if (seriesList.getValue() != null && !seriesList.getValue().isEmpty() && !seriesList.getValue().equals("\n")) {
+                    throw new TheTVDBConnectorException(
+                            seriesList.getValue()
+                    );
+                }
+
+                if (seriesList.getSeries() != null && seriesList.getSeries().length > 0) {
+                    if (seriesList.getSeries().length == 1) {
+                        return getFullSeriesInfo(
+                                seriesList.getSeries()[0].getId()
+                        );
+                    } else {
+                        for (Series series : seriesList.getSeries()) {
+                            if (series.getSeriesName().equals(seriesName)) {
+                                return getFullSeriesInfo(
+                                        series.getId()
+                                );
+                            }
+                        }
+
+                        throw new TheTVDBConnectorException(
+                                String.format(
+                                        "Multiple series with name \"%s\" found on TheTVDb but none were an exact match.",
+                                        seriesName
+                                )
+                        );
+                    }
+                } else {
+                    log.warn(String.format(
+                                    "No series with name \"%s\" found on TheTVDb.",
+                                    seriesName
+                            )
+                    );
+                }
+            } catch (HttpException e) {
+                retry = e.getCode() == 522;
+                if (!retry) {
+                    throw e;
+                } else {
+                    retryCount++;
+                }
             }
-        } else {
-            log.warn(String.format(
-                            "No series with name \"%s\" found on TheTVDb.",
-                            seriesName
-                    )
-            );
         }
 
         return null;

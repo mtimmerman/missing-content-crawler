@@ -60,9 +60,7 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "WHERE e.season = :season " +
             "AND e.plexKey IS NULL " +
             "AND (e.firstAiredOn is null " +
-            "OR e.firstAiredOn < current_date) " +
-            "GROUP BY e.theTVDbEpisodeNumber, e.id " +
-            "ORDER BY e.theTVDbEpisodeNumber")
+            "OR e.firstAiredOn < current_date) ")
     Integer countBySeasonNotOnPlex(
             @Param("season") Season season
     );
@@ -98,9 +96,7 @@ public interface EpisodeRepository extends PagingAndSortingRepository<Episode, I
             "AND e.plexKey IS NULL " +
             "AND s.theTVDbSeasonNumber > 0 " +
             "AND (e.firstAiredOn is null " +
-            "OR e.firstAiredOn < current_date) " +
-            "GROUP BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber, e.id " +
-            "ORDER BY s.theTVDbSeasonNumber, e.theTVDbEpisodeNumber")
+            "OR e.firstAiredOn < current_date) ")
     Integer countByTvShowNotOnPlex(
             @Param("tvShow") TvShow tvShow
     );
