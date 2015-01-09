@@ -1,50 +1,25 @@
-package com.mtimmerman.model.entities;
+package com.mtimmerman.resources;
 
-import org.springframework.data.annotation.AccessType;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.mtimmerman.model.serializers.DateSerializer;
+import org.springframework.hateoas.ResourceSupport;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
- * Created by maarten on 30.12.14.
+ * Created by maarten on 02.01.15.
  */
-@Entity
-@SequenceGenerator(
-        name = "episode_id_seq",
-        sequenceName = "episode_id_seq"
-)
-public class Episode {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "episode_id_seq")
-    @AccessType(AccessType.Type.PROPERTY)
-    private Integer id;
-
-    @ManyToOne(optional = false)
-    private Season season;
-
+public class EpisodeResource extends ResourceSupport {
+    private Integer pk;
     private String plexName;
-
     private String plexKey;
-
-    @NotNull
     private String theTVDbEpisodeName;
-
-    @NotNull
     private Integer theTVDbEpisodeNumber;
-
-    @NotNull
     private String searchName;
-
     private Date firstAiredOn;
 
-    public void setSeason(Season season) {
-        this.season = season;
+    public void setPk(Integer pk) {
+        this.pk = pk;
     }
 
     public void setPlexName(String plexName) {
@@ -67,8 +42,8 @@ public class Episode {
         this.searchName = searchName;
     }
 
-    public String getSearchName() {
-        return searchName;
+    public Integer getPk() {
+        return pk;
     }
 
     public String getPlexName() {
@@ -83,18 +58,15 @@ public class Episode {
         return theTVDbEpisodeName;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
     public Integer getTheTVDbEpisodeNumber() {
         return theTVDbEpisodeNumber;
     }
 
-    public Season getSeason() {
-        return season;
+    public String getSearchName() {
+        return searchName;
     }
 
+    @JsonSerialize(using= DateSerializer.class)
     public Date getFirstAiredOn() {
         return firstAiredOn;
     }

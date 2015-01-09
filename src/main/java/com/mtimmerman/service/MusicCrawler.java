@@ -1,15 +1,15 @@
 package com.mtimmerman.service;
 
+import com.mtimmerman.domain.lastfm.AlbumList;
+import com.mtimmerman.domain.lastfm.LastFMAlbum;
+import com.mtimmerman.domain.plex.Directory;
+import com.mtimmerman.domain.plex.DirectoryList;
+import com.mtimmerman.domain.plex.Server;
+import com.mtimmerman.domain.plex.enums.DirectoryType;
 import com.mtimmerman.model.entities.Album;
 import com.mtimmerman.model.entities.Artist;
 import com.mtimmerman.repositories.AlbumRepository;
 import com.mtimmerman.repositories.ArtistRepository;
-import com.mtimmerman.rest.resources.lastfm.AlbumList;
-import com.mtimmerman.rest.resources.lastfm.LastFMAlbum;
-import com.mtimmerman.rest.resources.plex.Directory;
-import com.mtimmerman.rest.resources.plex.DirectoryList;
-import com.mtimmerman.rest.resources.plex.Server;
-import com.mtimmerman.rest.resources.plex.enums.DirectoryType;
 import com.mtimmerman.service.exceptions.GapCrawlerException;
 import com.mtimmerman.service.exceptions.LastFMException;
 import com.mtimmerman.service.exceptions.PlexServerNotFoundException;
@@ -54,8 +54,7 @@ public class MusicCrawler extends AbstractCrawler {
         return lastFMConnector;
     }
 
-    private AlbumList getLastFMAlbums(String artist) throws IOException, LastFMException
-    {
+    private AlbumList getLastFMAlbums(String artist) throws IOException, LastFMException {
         return getLastFMConnector().getArtistGetTopAlbums(
                 artist,
                 null,
@@ -217,40 +216,42 @@ public class MusicCrawler extends AbstractCrawler {
                                     artistDirectory.getTitle()
                             );
 
-                            if (lastFMAlbumList.getLastFMAlbums() == null) {
+                            if (lastFMAlbumList == null || lastFMAlbumList.getLastFMAlbums() == null) {
                                 lastFMAlbumList = getLastFMAlbums(
                                         lastFMAlbumList.getArtist()
                                 );
                             }
 
-                            Artist artist = getArtist(
-                                    artistDirectory,
-                                    lastFMAlbumList
-                            );
-
-                            if (lastFMAlbumList.getLastFMAlbums() != null) {
-                                DirectoryList plexAlbumList = getPlexConnector().getMetaData(
-                                        server,
-                                        artistDirectory.getKey()
+                            if (lastFMAlbumList != null) {
+                                Artist artist = getArtist(
+                                        artistDirectory,
+                                        lastFMAlbumList
                                 );
 
-                                if (plexAlbumList.getDirectories() != null) {
-                                    for (LastFMAlbum lastFMAlbum : lastFMAlbumList.getLastFMAlbums()) {
-                                        getAlbum(
-                                                lastFMAlbum,
-                                                artist,
-                                                plexAlbumList
-                                        );
+                                if (lastFMAlbumList.getLastFMAlbums() != null) {
+                                    DirectoryList plexAlbumList = getPlexConnector().getMetaData(
+                                            server,
+                                            artistDirectory.getKey()
+                                    );
+
+                                    if (plexAlbumList.getDirectories() != null) {
+                                        for (LastFMAlbum lastFMAlbum : lastFMAlbumList.getLastFMAlbums()) {
+                                            getAlbum(
+                                                    lastFMAlbum,
+                                                    artist,
+                                                    plexAlbumList
+                                            );
+                                        }
                                     }
+                                } else {
+                                    logWarn(
+                                            String.format(
+                                                    "Artist \"%s\" had no albums on LastFM. Corrected to: \"%s\"",
+                                                    artistDirectory.getTitle(),
+                                                    lastFMAlbumList.getArtist()
+                                            )
+                                    );
                                 }
-                            } else {
-                                logWarn(
-                                        String.format(
-                                                "Artist \"%s\" had no albums on LastFM. Corrected to: \"%s\"",
-                                                artistDirectory.getTitle(),
-                                                lastFMAlbumList.getArtist()
-                                        )
-                                );
                             }
                         }
                     }

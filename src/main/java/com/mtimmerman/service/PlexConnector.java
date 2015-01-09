@@ -1,12 +1,12 @@
 package com.mtimmerman.service;
 
-import com.mtimmerman.rest.resources.plex.DeviceList;
-import com.mtimmerman.rest.resources.plex.DirectoryList;
-import com.mtimmerman.rest.resources.plex.OnDeckList;
-import com.mtimmerman.rest.resources.plex.PlayList;
-import com.mtimmerman.rest.resources.plex.Server;
-import com.mtimmerman.rest.resources.plex.ServerList;
-import com.mtimmerman.rest.resources.plex.User;
+import com.mtimmerman.domain.plex.DeviceList;
+import com.mtimmerman.domain.plex.DirectoryList;
+import com.mtimmerman.domain.plex.OnDeckList;
+import com.mtimmerman.domain.plex.PlayList;
+import com.mtimmerman.domain.plex.Server;
+import com.mtimmerman.domain.plex.ServerList;
+import com.mtimmerman.domain.plex.User;
 import com.mtimmerman.service.exceptions.PlexServerNotFoundException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CredentialsProvider;

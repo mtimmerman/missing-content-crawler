@@ -1,7 +1,7 @@
 package com.mtimmerman.service;
 
 import com.mtimmerman.Application;
-import com.mtimmerman.rest.resources.lastfm.AlbumList;
+import com.mtimmerman.domain.lastfm.AlbumList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +51,7 @@ public class LastFMConnectorTest {
                 50
         );
 
+        Assert.assertNotNull(albumList);
         Assert.assertEquals(50, albumList.getLastFMAlbums().length);
         Assert.assertTrue(albumList.getTotalPages() > 1);
     }
