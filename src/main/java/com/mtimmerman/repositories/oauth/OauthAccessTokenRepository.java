@@ -1,6 +1,7 @@
 package com.mtimmerman.repositories.oauth;
 
 import com.mtimmerman.model.entities.oauth.OauthAccessToken;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -16,6 +17,7 @@ public interface OauthAccessTokenRepository extends CrudRepository<OauthAccessTo
 
     List<OauthAccessToken> findByTokenId(@Param("tokenId") String tokenId);
 
+    @Query("SELECT t from OauthAccessToken t WHERE t.refreshToken = :refreshToken")
     List<OauthAccessToken> findByTokenByRefreshToken(@Param("refreshToken") String refreshToken);
 
     List<OauthAccessToken> findByClientId(@Param("clientId") String clientId);

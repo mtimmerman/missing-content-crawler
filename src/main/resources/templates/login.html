@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <title th:text="'CityLife - ' + #{login.title}">CityLife - Login</title>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css' />
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/static/images/favicon.ico}" />
+    <link type="text/css" rel="stylesheet" th:href="@{/static/css/normalize.css}" href="/static/css/normalize.css" />
+    <link type="text/css" rel="stylesheet" th:href="@{/static/css/style.css}" href="/static/css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+<div id="header" class="container-content" role="masthead">
+    <a th:href="${goBackUri}" href="#"><img th:src="@{/static/images/logo-citylife.png}" src="/static/images/logo-citylife.png" alt="CityLife" style="width: 64px; height: 38px;" /></a>
+    <a th:href="${goBackUri}" href="#" th:text="#{login.goBack}" class="goback-link"></a>
+</div>
+
+<div id="login-panel">
+    <h1 class="login-panel-header container-content container-inverted container-blue">
+        <a th:href="${goBackUri}" href="#"><img th:src="@{/static/images/logo-citylife.png}" src="/static/images/logo-citylife.png" alt="CityLife" style="width: 124px; height: 73px;" /></a>
+    </h1>
+    <p class="container-content container-inverted container-blue-dark login-panel-instructions">
+        <span th:text="${isMerchant} ? #{login.merchantMessage} : #{login.message}">Login message</span><br />
+        <span th:utext="#{login.noAccount}">No CityLife account yet?</span><br />
+        <span th:utext="#{login.getCard}"><a href="https://citylife.be/#!/en/#downloadCityLife">Download the CityLife app</a> or pick up a card in one of the participating <a href="https://citylife.be/#!/en/#merchant-map">businesses</a>.</span>
+    </p>
+    <form id="loginForm" name="loginForm" class="container-content container-gray" th:action="@{/login}" action="/login" method="post">
+        <ul th:if="${param.error}" class="form-error-messages">
+            <li th:text="#{login.failedLoginException}">Invalid login</li>
+        </ul>
+        <div class="form-group">
+            <label for="email" th:text="#{login.email}">Email:</label>
+            <input id="email" class="form-control"  type='email' name='username'  />
+        </div>
+        <div class="form-group">
+            <label for="password" th:text="#{login.password}">Password:</label>
+            <input id="password" class="form-control"  type='password' name='password' />
+        </div>
+        <input name="login" class="btn btn-success" th:value="#{login.login}" value="Login (th)" type="submit"/>
+    </form>
+    <p class="login-panel-footer text-center">
+        <a th:href="@{/password/forgotten}" href="/password/forgotten" th:text="#{login.forgotPassword}">Forgot password</a>
+    </p>
+</div>
+</body>
+</html>
