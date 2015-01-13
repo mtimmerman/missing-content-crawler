@@ -1,5 +1,6 @@
 package com.mtimmerman;
 
+import com.mtimmerman.filters.InternationalizationFilter;
 import com.mtimmerman.service.KickAssConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +16,11 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+import java.util.Locale;
 
 /**
  * Created by maarten on 24.12.14.
@@ -46,6 +51,20 @@ public class Application {
         );
 
         return kickAssConnector;
+    }
+
+    @Bean
+    public LocaleResolver localeResolver() {
+        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+        localeResolver.setDefaultLocale(new Locale("nl"));
+        return localeResolver;
+    }
+
+    @Bean
+    public InternationalizationFilter internationalizationFilter() {
+        InternationalizationFilter internationalizationFilter = new InternationalizationFilter();
+        internationalizationFilter.setLocaleParam("lang");
+        return internationalizationFilter;
     }
 
     @Bean
