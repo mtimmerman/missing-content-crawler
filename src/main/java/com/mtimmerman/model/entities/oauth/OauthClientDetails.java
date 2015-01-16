@@ -4,6 +4,7 @@ import com.mtimmerman.security.Authority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
@@ -40,6 +41,7 @@ public class OauthClientDetails implements ClientDetails {
     @NotNull()
     private String authorizedGrantTypes;
     @Size(max = 256)
+    @Column(name = "web_server_redirect_uri")
     private String webServerRedirectURI;
     @Size(max = 256)
     @NotNull()
@@ -51,6 +53,7 @@ public class OauthClientDetails implements ClientDetails {
     @Size(max = 4096)
     private String additionalInformation;
     @Size(max = 256)
+    @Column(name = "autoapprove")
     private String autoApprove;
     @Size(max = 256)
     private String websiteUri;

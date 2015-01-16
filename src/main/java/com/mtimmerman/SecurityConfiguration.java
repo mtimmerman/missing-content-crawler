@@ -3,24 +3,34 @@ package com.mtimmerman;
 import com.mtimmerman.filters.CORSFilter;
 import com.mtimmerman.filters.InternationalizationFilter;
 import com.mtimmerman.security.NoRedirectLogoutSuccessHandler;
+import com.mtimmerman.security.PasswordEncoderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 
 /**
  * Created by maarten on 13.01.15.
@@ -113,4 +123,26 @@ public class SecurityConfiguration {
         }
     }
 
+    @Autowired
+    private UserDetailsService userAccessDetailsService;
+
+    @Autowired
+    private PasswordEncoderImpl passwordEncoder;
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new SavedRequestAwareAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        ArrayList<AuthenticationProvider> providers = new ArrayList<>();
+
+        DaoAuthenticationProvider userAuthProvider = new DaoAuthenticationProvider();
+        userAuthProvider.setUserDetailsService(userAccessDetailsService);
+        userAuthProvider.setPasswordEncoder(passwordEncoder);
+        providers.add(userAuthProvider);
+
+        return new ProviderManager(providers);
+    }
 }

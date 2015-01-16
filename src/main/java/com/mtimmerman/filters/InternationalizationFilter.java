@@ -1,7 +1,7 @@
 package com.mtimmerman.filters;
 
-import com.mtimmerman.model.entities.oauth.OauthClientDetail;
-import com.mtimmerman.repositories.oauth.OauthClientDetailRepository;
+import com.mtimmerman.model.entities.oauth.OauthClientDetails;
+import com.mtimmerman.repositories.oauth.OauthClientDetailsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class InternationalizationFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(InternationalizationFilter.class);
     private String localeParam="lang";
     @Autowired
-    private OauthClientDetailRepository oauthClientDetailRepository;
+    private OauthClientDetailsRepository oauthClientDetailsRepository;
 
     @Autowired
     private LocaleResolver localeResolver;
@@ -69,12 +69,12 @@ public class InternationalizationFilter extends OncePerRequestFilter {
 
                 Boolean isMerchant = merchantClients.contains(clientId);
 
-                OauthClientDetail oauthClientDetail = oauthClientDetailRepository.findByClientId(clientId);
+                OauthClientDetails oauthClientDetails = oauthClientDetailsRepository.findByClientId(clientId);
 
                 String websiteUri = "";
 
-                if (oauthClientDetail != null && oauthClientDetail.getWebsiteUri() != null) {
-                    websiteUri = oauthClientDetail.getWebsiteUri();
+                if (oauthClientDetails != null && oauthClientDetails.getWebsiteUri() != null) {
+                    websiteUri = oauthClientDetails.getWebsiteUri();
                 }
 
                 httpSession.setAttribute("isMerchant", isMerchant);
