@@ -21,7 +21,7 @@ import java.util.Set;
  * Created by maarten on 13.01.15.
  */
 @Entity
-public class OauthClientDetail implements ClientDetails {
+public class OauthClientDetails implements ClientDetails {
 
     private static final long serialVersionUID = 1L;
 
@@ -187,8 +187,8 @@ public class OauthClientDetail implements ClientDetails {
             return false;
         }
 
-        if (o instanceof OauthClientDetail) {
-            final OauthClientDetail other = (OauthClientDetail) o;
+        if (o instanceof OauthClientDetails) {
+            final OauthClientDetails other = (OauthClientDetails) o;
             return Objects.equals(getClientId(), other.getClientId())
                     && Objects.equals(getClientSecret(), other.getClientSecret());
         }
