@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <title th:text="'Missing Content Crawler - ' + #{login.title}">Missing Content Crawler - Login</title>
+</head>
+<body>
+
+<form id="loginForm" name="loginForm" th:action="@{/login}" action="/login" method="post">
+    <ul th:if="${param.error}">
+        <li th:text="#{login.failedLoginException}">Invalid login</li>
+    </ul>
+    <div>
+        <label for="email" th:text="#{login.email}">Email:</label>
+        <input id="email" type='email' name='username'  />
+    </div>
+    <div>
+        <label for="password" th:text="#{login.password}">Password:</label>
+        <input id="password"  type='password' name='password' />
+    </div>
+    <input name="login" th:value="#{login.login}" value="Login (th)" type="submit"/>
+</form>
+</body>
+</html>

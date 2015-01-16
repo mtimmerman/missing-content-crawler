@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <title th:text="'Missing Content Crawler - ' + #{accessConfirmation.title}">Missing Content Crawler - subtitle</title>
+</head>
+
+<body>
+
+<div id="login-panel">
+    <p th:utext="#{accessConfirmation.grantAccess(${client_id})}">
+    </p>
+    <div>
+        <form id="confirmationForm" name="confirmationForm" th:action="@{/oauth/authorize}" method="post">
+            <input th:each="scope : ${scopes}" type="hidden" th:name="${scope.key}" value="true"/>
+            <input name="user_oauth_approval" value="true" type="hidden"/>
+            <label><input id="confirmationForm-submit" name="authorize" th:value="#{accessConfirmation.authorize}" value="" type="submit"/></label>
+        </form>
+    </div>
+</div>
+</body>
+</html>

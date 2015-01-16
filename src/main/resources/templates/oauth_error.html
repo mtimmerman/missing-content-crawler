@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="'Missing Content Crawler - ' + #{oauthError.title}">Missing Content Crawler - oauth error</title>
+</head>
+
+<body>
+
+<div id="login-panel">
+    <p th:text="#{oauthError.message}">Oauth message</p>
+    <div>
+        <p th:text="${message} + ' (' + ${error.summary} + ')'">Message (summary)</p>
+        <p th:text="#{oauthError.instruction}">Instruction for the user</p>
+    </div>
+</div>
+</body>
+</html>
