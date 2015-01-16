@@ -98,10 +98,7 @@ public class SecurityConfiguration {
                     .and().authorizeRequests()
                     .antMatchers("/oauth/authorize").authenticated()
                     .antMatchers("/static/**").permitAll()
-                    .antMatchers("/cyfe/**").permitAll()
                     .antMatchers("/health", "/info").permitAll()
-                    .antMatchers("/heartbeatdevices/status").permitAll()
-                    .antMatchers("/password/**").permitAll()
                     .antMatchers(
                             "/autoconfig",
                             "/beans",

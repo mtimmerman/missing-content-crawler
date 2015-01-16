@@ -3,37 +3,19 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-    <title th:text="'CityLife - ' + #{accessConfirmation.title}">CityLife - subtitle</title>
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'/>
-    <link rel="shortcut icon" type="image/x-icon" th:href="@{/static/images/favicon.ico}" />
-    <link type="text/css" rel="stylesheet" th:href="@{/static/css/normalize.css}" href="/static/css/normalize.css" />
-    <link type="text/css" rel="stylesheet" th:href="@{/static/css/style.css}" href="/static/css/style.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="'Missing Content Crawler - ' + #{accessConfirmation.title}">Missing Content Crawler - subtitle</title>
 </head>
 
 <body>
 
-<div id="header" class="container-content" role="masthead">
-    <img th:src="@{/static/images/logo-citylife.png}" src="/static/images/logo-citylife.png" alt="CityLife" style="width: 64px; height: 38px;" />
-</div>
-
 <div id="login-panel">
-    <h1 class="login-panel-header container-content container-inverted container-blue">
-        <img th:src="@{/static/images/logo-citylife.png}" src="/static/images/logo-citylife.png" alt="CityLife" style="width: 124px; height: 73px;" />
-    </h1>
-    <p class="container-content container-inverted container-blue-dark login-panel-instructions" th:utext="#{accessConfirmation.grantAccess(${client_id})}">
+    <p th:utext="#{accessConfirmation.grantAccess(${client_id})}">
     </p>
-    <div class="container-content container-gray clearfix">
-        <form th:if="${#authorization.expression('hasRole(''ROLE_USER'') or hasRole(''ROLE_MERCHANT'')')}"
-              id="denialForm" name="denialForm" th:action="@{/oauth/authorize}" method="post">
-            <input th:each="scope : ${scopes}" type="hidden" th:name="${scope.key}" value="false"/>
-            <input name="user_oauth_approval" value="false" type="hidden"/>
-            <label><input id="denialForm-submit" class="btn btn-danger" name="deny" th:value="#{accessConfirmation.deny}" value="" type="submit"/></label>
-        </form>
+    <div>
         <form id="confirmationForm" name="confirmationForm" th:action="@{/oauth/authorize}" method="post">
             <input th:each="scope : ${scopes}" type="hidden" th:name="${scope.key}" value="true"/>
             <input name="user_oauth_approval" value="true" type="hidden"/>
-            <label><input id="confirmationForm-submit" class="btn btn-success" name="authorize" th:value="#{accessConfirmation.authorize}" value="" type="submit"/></label>
+            <label><input id="confirmationForm-submit" name="authorize" th:value="#{accessConfirmation.authorize}" value="" type="submit"/></label>
         </form>
     </div>
 </div>
