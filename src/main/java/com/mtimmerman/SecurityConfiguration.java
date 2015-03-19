@@ -67,7 +67,7 @@ public class SecurityConfiguration {
                     ).permitAll()
                     .antMatchers(
                             "/api/**"
-                    ).authenticated()
+                    ).permitAll()
                     .and().apply(resources)
                     .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler);
         }
